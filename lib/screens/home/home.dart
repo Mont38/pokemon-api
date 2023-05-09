@@ -1,6 +1,8 @@
 import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class Home extends StatelessWidget {
   Home({super.key});
@@ -161,13 +163,64 @@ class Page2 extends StatelessWidget {
   }
 }
 
-class Page3 extends StatelessWidget {
+class Page3 extends StatefulWidget {
   const Page3({Key? key}) : super(key: key);
+  _Page3State createState() => _Page3State();
+}
+
+class _Page3State extends State<Page3> {
+  var pokeApi = "https://pokeapi.co/api/v2/pokemon?limit=100&offset=0";
+  List<dynamic> pokedex = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchPokemonData();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        color: Colors.red, child: const Center(child: Text('Page 3')));
+    return Scaffold(
+      body: Column(
+        children: [
+          pokedex.isNotEmpty
+              ? Expanded(
+                  child: GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 1.4,
+                    ),
+                    itemCount: pokedex.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        child: Text(pokedex[index]['name']),
+                      );
+                    },
+                  ),
+                )
+              : Center(
+                  child: CircularProgressIndicator(),
+                ),
+        ],
+      ),
+    );
+  }
+
+  void fetchPokemonData() {
+    http.get(Uri.parse(pokeApi)).then((response) {
+      if (response.statusCode == 200) {
+        var decodedJsonData = jsonDecode(response.body);
+        setState(() {
+          pokedex = decodedJsonData['results'];
+          print(pokedex[0]['name']);
+        });
+      } else {
+        print(
+            'Failed to fetch Pokémon data. Error code: ${response.statusCode}');
+      }
+    }).catchError((error) {
+      print('Error occurred while fetching Pokémon data: $error');
+    });
   }
 }
 
