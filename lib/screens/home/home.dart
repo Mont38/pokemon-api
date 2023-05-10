@@ -324,7 +324,7 @@ class _Page3State extends State<Page3> {
                                           ),
                                         ),
                                       ),
-                                      /*Positioned(
+                                      Positioned(
                                       bottom: 5,
                                       right: 5,
                                       child: CachedNetworkImage(
@@ -332,7 +332,7 @@ class _Page3State extends State<Page3> {
                                         height: 100,
                                         fit: BoxFit.fitHeight,
                                       )
-                                    )*/
+                                    )
                                     ],
                                   ),
                                 ),
