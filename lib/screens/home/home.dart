@@ -1,8 +1,15 @@
 import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:pokemon/controllers/poke_controller.dart';
+import 'package:pokemon/model/poke_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+import 'dart:core';
+
+import 'package:pokemon/screens/home/pokemon_detail_screen.dart';
 
 class Home extends StatelessWidget {
   Home({super.key});
@@ -165,62 +172,262 @@ class Page2 extends StatelessWidget {
 
 class Page3 extends StatefulWidget {
   const Page3({Key? key}) : super(key: key);
+
+  @override
   _Page3State createState() => _Page3State();
 }
 
 class _Page3State extends State<Page3> {
-  var pokeApi = "https://pokeapi.co/api/v2/pokemon?limit=100&offset=0";
-  List<dynamic> pokedex = [];
+  late Future<PokeModel> _pokeDataModel;
 
   @override
   void initState() {
     super.initState();
+    _pokeDataModel = PokeController().getData();
     fetchPokemonData();
   }
 
+  var pokeApi =
+      "https://raw.githubusercontent.com/Biuni/PokemonGO-Pokedex/master/pokedex.json";
+  late List<dynamic> pokedexthis = [];
+
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
     return Scaffold(
-      body: Column(
+      body: Stack(
         children: [
-          pokedex.isNotEmpty
-              ? Expanded(
-                  child: GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 1.4,
-                    ),
-                    itemCount: pokedex.length,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        child: Text(pokedex[index]['name']),
-                      );
+          Positioned(
+              top: -50,
+              right: -50,
+              child: Image.asset(
+                'assets/images/pokeball.png',
+                width: 200,
+                fit: BoxFit.fitWidth,
+              )),
+          Positioned(
+            top: 80,
+            left: 20,
+            child: Text(
+              "PokeDex",
+              style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black),
+            ),
+          ),
+          Positioned(
+            top: 150,
+            bottom: 0,
+            width: width,
+            child: Column(
+              children: [
+                Expanded(
+                  child: FutureBuilder<PokeModel>(
+                    future: _pokeDataModel,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final pokedex = snapshot.data!.pokemon;
+
+                        return GridView.count(
+                          crossAxisCount: 2,
+                          childAspectRatio: 1.4,
+                          children: List.generate(pokedex.length, (index) {
+                            final pokemon = pokedex[index];
+                            final type = index < pokedexthis.length
+                                ? pokedexthis[index]['type'][0]
+                                : '';
+
+                            return InkWell(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8.0, horizontal: 12),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: type == 'Grass'
+                                        ? Colors.greenAccent
+                                        : type == "Fire"
+                                            ? Colors.redAccent
+                                            : type == "Water"
+                                                ? Colors.blue
+                                                : type == "Electric"
+                                                    ? Colors.yellow
+                                                    : type == "Rock"
+                                                        ? Colors.grey
+                                                        : type == "Ground"
+                                                            ? Colors.brown
+                                                            : type == "Psychic"
+                                                                ? Colors.indigo
+                                                                : type ==
+                                                                        "Fighting"
+                                                                    ? Colors
+                                                                        .orange
+                                                                    : type ==
+                                                                            "Bug"
+                                                                        ? Colors
+                                                                            .lightGreenAccent
+                                                                        : type ==
+                                                                                "Ghost"
+                                                                            ? Colors.deepPurple
+                                                                            : type == "Poison"
+                                                                                ? Colors.deepPurpleAccent
+                                                                                : type == "Normal"
+                                                                                    ? Colors.black26
+                                                                                    : Colors.pink,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(20)),
+                                  ),
+                                  child: Stack(
+                                    children: [
+                                      Positioned(
+                                        bottom: -10,
+                                        right: -10,
+                                        child: Image.asset(
+                                          'assets/images/pokeball.png',
+                                          height: 100,
+                                          fit: BoxFit.fitHeight,
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: 20,
+                                        left: 20,
+                                        child: Text(
+                                          pokemon.name,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: 45,
+                                        left: 20,
+                                        child: Container(
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 8.0,
+                                                right: 8.0,
+                                                top: 4,
+                                                bottom: 4),
+                                            child: Text(
+                                              type.toString(),
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(20)),
+                                            color: Colors.black26,
+                                          ),
+                                        ),
+                                      ),
+                                      /*Positioned(
+                                      bottom: 5,
+                                      right: 5,
+                                      child: CachedNetworkImage(
+                                        imageUrl: pokemon.img.toString(),
+                                        height: 100,
+                                        fit: BoxFit.fitHeight,
+                                      )
+                                    )*/
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              onTap: () {
+                                //detail screen
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => PokemonDetailScreen(
+                                          pokemonDetail: pokedexthis[index], 
+                                          color: type == 'Grass'
+                                        ? Colors.greenAccent
+                                        : type == "Fire"
+                                            ? Colors.redAccent
+                                            : type == "Water"
+                                                ? Colors.blue
+                                                : type == "Electric"
+                                                    ? Colors.yellow
+                                                    : type == "Rock"
+                                                        ? Colors.grey
+                                                        : type == "Ground"
+                                                            ? Colors.brown
+                                                            : type == "Psychic"
+                                                                ? Colors.indigo
+                                                                : type ==
+                                                                        "Fighting"
+                                                                    ? Colors
+                                                                        .orange
+                                                                    : type ==
+                                                                            "Bug"
+                                                                        ? Colors
+                                                                            .lightGreenAccent
+                                                                        : type ==
+                                                                                "Ghost"
+                                                                            ? Colors.deepPurple
+                                                                            : type == "Poison"
+                                                                                ? Colors.deepPurpleAccent
+                                                                                : type == "Normal"
+                                                                                    ? Colors.black26
+                                                                                    : Colors.pink, 
+                                          heroTag: index)));
+                              },
+                            );
+                          }),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Center(
+                          child: Text(
+                              'Failed to fetch Pokémon data. Error: ${snapshot.error}'),
+                        );
+                      } else {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
                     },
                   ),
-                )
-              : Center(
-                  child: CircularProgressIndicator(),
                 ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
-  void fetchPokemonData() {
-    http.get(Uri.parse(pokeApi)).then((response) {
+  void fetchPokemonData() async {
+    try {
+      final response = await http.get(Uri.parse(pokeApi));
       if (response.statusCode == 200) {
-        var decodedJsonData = jsonDecode(response.body);
+        final decodedJsonData = jsonDecode(response.body);
         setState(() {
-          pokedex = decodedJsonData['results'];
-          print(pokedex[0]['name']);
+          pokedexthis = decodedJsonData['pokemon'];
         });
       } else {
         print(
             'Failed to fetch Pokémon data. Error code: ${response.statusCode}');
       }
-    }).catchError((error) {
+    } catch (error) {
       print('Error occurred while fetching Pokémon data: $error');
-    });
+    }
+  }
+
+  fetchType(PokeModel? pokeModel, int index) {
+    if (pokeModel != null) {
+      final pokemon = pokeModel.pokemon[index];
+      final types = pokemon.type;
+
+      if (types != null) {
+        return types.map((type) => type.toString()).toList();
+      }
+    }
+
+    return [];
   }
 }
 
