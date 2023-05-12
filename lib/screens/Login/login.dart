@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-
-import 'package:flutter/material.dart';
 import 'package:pokemon/screens/Login/loading_modal.dart';
 import 'package:pokemon/screens/responsive/responsive.dart';
-import 'package:social_login_buttons/social_login_buttons.dart';
+import 'package:sign_button/constants.dart';
+import 'package:sign_button/create_button.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -17,28 +16,67 @@ class Login extends StatefulWidget {
 //se le puso OutlineInputBorder para poner la linea que rodea los bordes de la caja de texto
 class _LoginScreenState extends State<Login> {
   bool isLoading = false;
-
+//textfields-------------------------------
   final txtEmail = TextFormField(
-    decoration: const InputDecoration(
-        label: Text('Tu correo baboso'),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            width: 3,
-            color: Color.fromRGBO(255, 123, 137, 0.5),
-          ),
+    decoration: InputDecoration(
+      labelText: 'Email',
+      labelStyle: TextStyle(color: Color.fromRGBO(244, 244, 244, 1)),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(
+          color: Colors.grey.shade400,
+          width: 2,
         ),
-        border: OutlineInputBorder()),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(
+          color: Color.fromRGBO(255, 178, 122, 1),
+          width: 2,
+        ),
+      ),
+      filled: true,
+      fillColor: Color.fromRGBO(66, 71, 106, 0.5),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(
+          color: Color.fromRGBO(66, 71, 106, 0.5),
+          width: 2,
+        ),
+      ),
+      contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+    ),
   );
+
   final txtPass = TextFormField(
-    decoration: const InputDecoration(
-        label: Text('Tu contrasenia baboso'),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            width: 3,
-            color: Color.fromRGBO(255, 123, 137, 0.5),
-          ),
+    decoration: InputDecoration(
+      labelText: 'Password',
+      labelStyle: TextStyle(color: Color.fromRGBO(244, 244, 244, 1)),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(
+          color: Colors.grey.shade400,
+          width: 2,
         ),
-        border: OutlineInputBorder()),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(
+          color: Color.fromRGBO(255, 178, 122, 1),
+          width: 2,
+        ),
+      ),
+      filled: true,
+      fillColor: Color.fromRGBO(66, 71, 106, 0.5),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(
+          color: Color.fromRGBO(66, 71, 106, 0.5),
+          width: 2,
+        ),
+      ),
+      contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+    ),
     obscureText: true,
   );
 
@@ -47,13 +85,9 @@ class _LoginScreenState extends State<Login> {
   );
   //Aqui debajo se importó una "libreria" de dev.net que agrega botonos para login de diferentes medias, como google, facebook, etc.
 
-  final btnFace = SocialLoginButton(
-      buttonType: SocialLoginButtonType.facebook, onPressed: () {});
-  final btnGit = SocialLoginButton(
-      buttonType: SocialLoginButtonType.github, onPressed: () {});
-
+  //Logos images-------------------
   final imgLogo = Image.asset(
-    'assets/logo.png',
+    'assets/images/logo.png',
     height: 200,
   );
   final imgLogoDesktop = Image.asset(
@@ -77,19 +111,35 @@ class _LoginScreenState extends State<Login> {
               const Color.fromARGB(255, 77, 113, 164)),
         ),
         onPressed: () {
-          Navigator.pushNamed(context, '/Onboarding');
+          Navigator.pushNamed(context, '/previewPages');
         },
         child: const Icon(
           Icons.arrow_back_rounded,
         ),
       ),
     );
-    final btnGoogle = SocialLoginButton(
-        buttonType: SocialLoginButtonType.google,
-        onPressed: () {
-          Navigator.pushNamed(context, '/onboarding');
-        });
-
+    //buttons authentication -------------------------------
+    final btnFace = SignInButton.mini(
+      buttonType: ButtonType.facebook,
+      onPressed: () {},
+    );
+    final btnGit = SignInButton.mini(
+      buttonType: ButtonType.github,
+      onPressed: () {},
+    );
+    final btnGoogle = SignInButton.mini(
+      buttonType: ButtonType.google,
+      onPressed: () {
+        Navigator.pushNamed(context, '/');
+      },
+    );
+    const txt = Text(
+      "Don't have an account?",
+      style: TextStyle(
+        color: Color.fromARGB(255, 255, 255, 255),
+        fontSize: 16,
+      ),
+    );
     final txtRegister = Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: TextButton(
@@ -97,23 +147,30 @@ class _LoginScreenState extends State<Login> {
             Navigator.pushNamed(context, '/register');
           },
           child: const Text(
-            'Crear cuenta',
-            style:
-                TextStyle(fontSize: 18, decoration: TextDecoration.underline),
+            'Sign up',
+            style: TextStyle(
+                color: Color.fromRGBO(255, 178, 122, 1),
+                fontSize: 16,
+                decoration: TextDecoration.underline),
           )),
     );
-
-    final btnEmail = SocialLoginButton(
-        buttonType: SocialLoginButtonType.generalLogin,
+    final btnEmail = TextButton(
+        style: ButtonStyle(
+          foregroundColor: MaterialStateProperty.all<Color>(
+              const Color.fromARGB(255, 13, 13, 13)),
+          backgroundColor: MaterialStateProperty.all<Color>(
+              Color.fromRGBO(255, 178, 122, 1)),
+        ),
         onPressed: () {
           isLoading = true;
           setState(() {});
-          Future.delayed(Duration(milliseconds: 4000)).then((value) {
+          Future.delayed(Duration(milliseconds: 3000)).then((value) {
             isLoading = false;
             setState(() {});
             Navigator.pushNamed(context, '/Home');
           });
-        });
+        },
+        child: const Text('Sign in'));
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -124,7 +181,7 @@ class _LoginScreenState extends State<Login> {
                 image: DecorationImage(
               opacity: .9,
               fit: BoxFit.cover,
-              image: AssetImage('assets/Back.jpg'),
+              image: AssetImage('assets/images/background_login.jpg'),
             )),
             child: Padding(
               padding: const EdgeInsets.symmetric(
@@ -146,6 +203,7 @@ class _LoginScreenState extends State<Login> {
                           txtRegister: txtRegister,
                           imgLogo: imgLogo,
                           backbutton: backbutton,
+                          txt: txt,
                         ),
                         desktop: Desktop(
                           imgLogoDesktop: imgLogoDesktop,
@@ -157,6 +215,7 @@ class _LoginScreenState extends State<Login> {
                           btnFace: btnFace,
                           btnGit: btnGit,
                           backbutton: backbutton,
+                          txt: txt,
                         ),
                         tablet: tablet(
                           imgLogoTablet: imgLogoTablet,
@@ -168,6 +227,7 @@ class _LoginScreenState extends State<Login> {
                           btnFace: btnFace,
                           btnGit: btnGit,
                           backbutton: backbutton,
+                          txt: txt,
                         ),
                       ),
                     ],
@@ -195,17 +255,19 @@ class Desktop extends StatelessWidget {
     required this.btnFace,
     required this.btnGit,
     required this.backbutton,
+    required this.txt,
   });
 
   final Image imgLogoDesktop;
   final TextFormField txtEmail;
   final SizedBox spaceHorizontal;
   final TextFormField txtPass;
-  final SocialLoginButton btnEmail;
-  final SocialLoginButton btnGoogle;
-  final SocialLoginButton btnFace;
-  final SocialLoginButton btnGit;
+  final TextButton btnEmail;
+  final SignInButton btnGoogle;
+  final SignInButton btnFace;
+  final SignInButton btnGit;
   final ClipRRect backbutton;
+  final Text txt;
 
   @override
   Widget build(BuildContext context) {
@@ -274,17 +336,19 @@ class tablet extends StatelessWidget {
     required this.btnFace,
     required this.btnGit,
     required this.backbutton,
+    required this.txt,
   });
 
   final Image imgLogoTablet;
   final TextFormField txtEmail;
   final SizedBox spaceHorizontal;
   final TextFormField txtPass;
-  final SocialLoginButton btnEmail;
-  final SocialLoginButton btnGoogle;
-  final SocialLoginButton btnFace;
-  final SocialLoginButton btnGit;
+  final TextButton btnEmail;
+  final SignInButton btnGoogle;
+  final SignInButton btnFace;
+  final SignInButton btnGit;
   final ClipRRect backbutton;
+  final Text txt;
 
   @override
   Widget build(BuildContext context) {
@@ -352,30 +416,34 @@ class MobileLoginScreen extends StatelessWidget {
     required this.txtRegister,
     required this.imgLogo,
     required this.backbutton,
+    required this.txt,
   });
 
   final TextFormField txtEmail;
   final SizedBox spaceHorizontal;
   final TextFormField txtPass;
-  final SocialLoginButton btnEmail;
-  final SocialLoginButton btnGoogle;
-  final SocialLoginButton btnFace;
-  final SocialLoginButton btnGit;
+  final TextButton btnEmail;
+  final SignInButton btnGoogle;
+  final SignInButton btnFace;
+  final SignInButton btnGit;
   final Padding txtRegister;
   final Image imgLogo;
   final ClipRRect backbutton;
+  final Text txt;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: SingleChildScrollView(
+      child: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              child: imgLogo,
-              margin: EdgeInsets.only(bottom: 15),
-              height: 200,
+              margin: EdgeInsets.only(bottom: 15, top: 20),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(300),
+                child: imgLogo,
+              ),
             ),
             txtEmail,
             spaceHorizontal,
@@ -383,13 +451,24 @@ class MobileLoginScreen extends StatelessWidget {
             spaceHorizontal,
             btnEmail,
             spaceHorizontal,
-            btnGoogle,
-            spaceHorizontal,
-            btnFace,
-            spaceHorizontal,
-            btnGit,
-            spaceHorizontal,
-            txtRegister,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                btnGoogle,
+                spaceHorizontal,
+                btnFace,
+                spaceHorizontal,
+                btnGit,
+                spaceHorizontal,
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                txt,
+                txtRegister,
+              ],
+            ),
             spaceHorizontal,
             backbutton,
           ],

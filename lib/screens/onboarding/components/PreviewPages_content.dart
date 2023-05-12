@@ -7,9 +7,10 @@ class SplashContent extends StatelessWidget {
   const SplashContent({
     Key? key,
     this.text,
+    this.title,
     this.image,
   }) : super(key: key);
-  final String? text, image;
+  final String? text, image, title;
 
   @override
   Widget build(BuildContext context) {
@@ -17,14 +18,18 @@ class SplashContent extends StatelessWidget {
       children: <Widget>[
         Spacer(),
         Text(
-          "The Oasis Shop",
+          title!,
           style: TextStyle(
             fontSize: getProportionateScreenWidth(36),
-            color: kMainColor,
+            color: Color.fromRGBO(147, 158, 178, 0.8),
             fontWeight: FontWeight.bold,
           ),
         ),
+        Spacer(),
         Text(
+          style: TextStyle(
+            color: Color.fromRGBO(254, 254, 254, 0.8),
+          ),
           text!,
           textAlign: TextAlign.center,
         ),

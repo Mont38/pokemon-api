@@ -6,7 +6,7 @@ import '/constants.dart';
 import '/size_config.dart';
 
 // This is the best practice
-import '../components/onboarding_content.dart';
+import 'PreviewPages_content.dart';
 import '../../../components/default_button.dart';
 
 class Body extends StatefulWidget {
@@ -17,12 +17,18 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   int currentPage = 0;
   List<Map<String, String>> splashData = [
-    {"text": "Best Shopping Experience", "image": "assets/a1.jpg"},
     {
-      "text": "Get incredible offers everytime \nyou shop your favourite items",
+      "title": "PokeApp",
+      "text": "Present by Ryan Serrano and Montserrat Tapia",
+      "image": "assets/images/preview.png"
+    },
+    {
+      "title": "Content",
+      "text": "in this app you can see all pokemon and add them to favorites",
       "image": "assets/a1.jpg"
     },
     {
+      "title": "App",
       "text": "We show the easy way to shop. \nJust stay at home with us",
       "image": "assets/a1.jpg"
     },
@@ -46,6 +52,7 @@ class _BodyState extends State<Body> {
                 itemBuilder: (context, index) => SplashContent(
                   image: splashData[index]["image"],
                   text: splashData[index]['text'],
+                  title: splashData[index]['title'],
                 ),
               ),
             ),
@@ -89,7 +96,7 @@ class _BodyState extends State<Body> {
       height: 6,
       width: currentPage == index ? 20 : 6,
       decoration: BoxDecoration(
-        color: currentPage == index ? kMainColor : Color(0xFFD8D8D8),
+        color: Color.fromRGBO(83, 107, 147, 0.8),
         borderRadius: BorderRadius.circular(3),
       ),
     );

@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:pokemon/screens/onboarding/splash_screen.dart';
+import 'package:pokemon/screens/onboarding/PreviewPages.dart';
 import 'firebase_options.dart';
 import 'routes.dart';
 
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
 
       // home: SplashScreen(),
       // We use routeName so that we don't need to remember the name
-      initialRoute: SplashScreen.routeName,
+      initialRoute: PreviewPages.routeName,
       routes: routes,
     );
   }

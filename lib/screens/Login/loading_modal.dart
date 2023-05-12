@@ -6,8 +6,14 @@ class LoadingModalWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color.fromARGB(100, 234, 195, 184),
-      child: Center(child: Image.asset('assets/load.gif')),
-    );
+        color: const Color.fromARGB(100, 234, 195, 184),
+        child: Container(
+          decoration: const BoxDecoration(
+              image: DecorationImage(
+            opacity: .9,
+            fit: BoxFit.cover,
+            image: AssetImage('assets/load.gif'),
+          )),
+        ));
   }
 }
