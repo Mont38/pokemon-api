@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pokemon/firebase/auth_user/auth_page.dart';
 
 import '../../Login/login.dart';
 import '/constants.dart';
@@ -75,7 +76,7 @@ class _BodyState extends State<Body> {
                     DefaultButton(
                       text: "Continue",
                       press: () {
-                        Navigator.pushNamed(context, Login.routeName);
+                        Navigator.pushNamed(context, AuthPage.routeName);
                       },
                     ),
                     Spacer(),

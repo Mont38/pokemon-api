@@ -29,6 +29,5 @@ class Responsive extends StatelessWidget {
     } else {
       return mobile;
     }
-    return Container();
   }
 }

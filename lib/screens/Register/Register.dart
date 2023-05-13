@@ -1,72 +1,64 @@
-import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pokemon/firebase/auth_user/auth_google.dart';
-import 'package:pokemon/firebase/auth_user/auth_page.dart';
 import 'package:pokemon/screens/Login/loading_modal.dart';
 import 'package:pokemon/screens/responsive/responsive.dart';
 import 'package:sign_button/constants.dart';
 import 'package:sign_button/create_button.dart';
 
+class Register extends StatefulWidget {
+  const Register({super.key});
 
-class Login extends StatefulWidget {
-  const Login({super.key});
-  static String routeName = "/Login";
+  static String routeName = "/register";
 
   @override
-  State<Login> createState() => _LoginScreenState();
+  State<Register> createState() => _RegisterScreenState();
 }
 
-final emailController = TextEditingController();
-final passwordController = TextEditingController();
+// final emailController = TextEditingController();
+// final passwordController = TextEditingController();
+// void singUserIn() async {
+//   await FirebaseAuth.instance.signInWithEmailAndPassword(
+//       email: emailController.text, password: passwordController.text);
+// }
 
 //lo debajo son text from donde se ponen los recuadros donde van tanto el correo como la contraseña
 //se le puso OutlineInputBorder para poner la linea que rodea los bordes de la caja de texto
-class _LoginScreenState extends State<Login> {
-  final auth = FirebaseAuth.instance;
-  void singUserIn() async {
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailController.text, password: passwordController.text);
-      Navigator.pop(context);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        //Wrong Email
-        wrongEmail();
-      } else if (e.code == 'wrong-password') {
-        //Wrong Password
-        wrongPassword();
-      }
-    }
-  }
-
-  void wrongPassword() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return const AlertDialog(
-          title: Text('Incorrect Password'),
-        );
-      },
-    );
-  }
-
-  void wrongEmail() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return const AlertDialog(
-          title: Text('Incorrect Email'),
-        );
-      },
-    );
-  }
-
+class _RegisterScreenState extends State<Register> {
   bool isLoading = false;
 //textfields-------------------------------
+  final txtName = TextFormField(
+    // controller: emailController,
+    decoration: InputDecoration(
+      labelText: 'Email',
+      labelStyle: TextStyle(color: Color.fromRGBO(244, 244, 244, 1)),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(
+          color: Colors.grey.shade400,
+          width: 2,
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(
+          color: Color.fromRGBO(255, 178, 122, 1),
+          width: 2,
+        ),
+      ),
+      filled: true,
+      fillColor: const Color.fromRGBO(66, 71, 106, 0.5),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(
+          color: Color.fromRGBO(66, 71, 106, 0.5),
+          width: 2,
+        ),
+      ),
+      contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+    ),
+  );
   final txtEmail = TextFormField(
-    controller: emailController,
+    // controller: emailController,
     decoration: InputDecoration(
       labelText: 'Email',
       labelStyle: TextStyle(color: Color.fromRGBO(244, 244, 244, 1)),
@@ -98,7 +90,7 @@ class _LoginScreenState extends State<Login> {
   );
 
   final txtPass = TextFormField(
-    controller: passwordController,
+    // controller: passwordController,
     decoration: InputDecoration(
       labelText: 'Password',
       labelStyle: TextStyle(color: Color.fromRGBO(244, 244, 244, 1)),
@@ -161,10 +153,10 @@ class _LoginScreenState extends State<Login> {
               const Color.fromARGB(255, 77, 113, 164)),
         ),
         onPressed: () {
-          exit(0);
+          Navigator.pushNamed(context, '/previewPages');
         },
         child: const Icon(
-          Icons.exit_to_app,
+          Icons.arrow_back_rounded,
         ),
       ),
     );
@@ -180,7 +172,7 @@ class _LoginScreenState extends State<Login> {
     final btnGoogle = SignInButton.mini(
       buttonType: ButtonType.google,
       onPressed: () {
-        AuthGoogle().signIngWithGoogle();
+        Navigator.pushNamed(context, '/');
       },
     );
     const txt = Text(
@@ -217,8 +209,7 @@ class _LoginScreenState extends State<Login> {
           Future.delayed(Duration(milliseconds: 3000)).then((value) {
             isLoading = false;
             setState(() {});
-            print(emailController);
-            singUserIn();
+            Navigator.pushNamed(context, '/auth');
           });
         },
         child: const Text('Sign in'));
@@ -255,6 +246,7 @@ class _LoginScreenState extends State<Login> {
                           imgLogo: imgLogo,
                           backbutton: backbutton,
                           txt: txt,
+                          txtName: txtName,
                         ),
                         desktop: Desktop(
                           imgLogoDesktop: imgLogoDesktop,
@@ -267,6 +259,7 @@ class _LoginScreenState extends State<Login> {
                           btnGit: btnGit,
                           backbutton: backbutton,
                           txt: txt,
+                          txtName: txtName,
                         ),
                         tablet: tablet(
                           imgLogoTablet: imgLogoTablet,
@@ -279,6 +272,7 @@ class _LoginScreenState extends State<Login> {
                           btnGit: btnGit,
                           backbutton: backbutton,
                           txt: txt,
+                          txtName: txtName,
                         ),
                       ),
                     ],
@@ -287,7 +281,6 @@ class _LoginScreenState extends State<Login> {
               ),
             ),
           ),
-          isLoading ? const LoadingModalWidget() : Container()
         ],
       ),
     );
@@ -295,24 +288,25 @@ class _LoginScreenState extends State<Login> {
 }
 
 class Desktop extends StatelessWidget {
-  const Desktop({
-    super.key,
-    required this.imgLogoDesktop,
-    required this.txtEmail,
-    required this.spaceHorizontal,
-    required this.txtPass,
-    required this.btnEmail,
-    required this.btnGoogle,
-    required this.btnFace,
-    required this.btnGit,
-    required this.backbutton,
-    required this.txt,
-  });
+  const Desktop(
+      {super.key,
+      required this.imgLogoDesktop,
+      required this.txtEmail,
+      required this.spaceHorizontal,
+      required this.txtPass,
+      required this.btnEmail,
+      required this.btnGoogle,
+      required this.btnFace,
+      required this.btnGit,
+      required this.backbutton,
+      required this.txt,
+      required this.txtName});
 
   final Image imgLogoDesktop;
   final TextFormField txtEmail;
   final SizedBox spaceHorizontal;
   final TextFormField txtPass;
+  final TextFormField txtName;
   final TextButton btnEmail;
   final SignInButton btnGoogle;
   final SignInButton btnFace;
@@ -338,6 +332,9 @@ class Desktop extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Column(
                   children: [
+                    txtName,
+                    spaceHorizontal,
+                    spaceHorizontal,
                     txtEmail,
                     spaceHorizontal,
                     spaceHorizontal,
@@ -388,12 +385,14 @@ class tablet extends StatelessWidget {
     required this.btnGit,
     required this.backbutton,
     required this.txt,
+    required this.txtName,
   });
 
   final Image imgLogoTablet;
   final TextFormField txtEmail;
   final SizedBox spaceHorizontal;
   final TextFormField txtPass;
+  final TextFormField txtName;
   final TextButton btnEmail;
   final SignInButton btnGoogle;
   final SignInButton btnFace;
@@ -419,6 +418,10 @@ class tablet extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
+                    txtName,
+                    spaceHorizontal,
+                    spaceHorizontal,
+                    spaceHorizontal,
                     txtEmail,
                     spaceHorizontal,
                     spaceHorizontal,
@@ -468,6 +471,7 @@ class MobileLoginScreen extends StatelessWidget {
     required this.imgLogo,
     required this.backbutton,
     required this.txt,
+    required this.txtName,
   });
 
   final TextFormField txtEmail;
@@ -481,6 +485,7 @@ class MobileLoginScreen extends StatelessWidget {
   final Image imgLogo;
   final ClipRRect backbutton;
   final Text txt;
+  final TextFormField txtName;
 
   @override
   Widget build(BuildContext context) {
@@ -495,6 +500,8 @@ class MobileLoginScreen extends StatelessWidget {
               child: imgLogo,
             ),
           ),
+          txtName,
+          spaceHorizontal,
           txtEmail,
           spaceHorizontal,
           txtPass,

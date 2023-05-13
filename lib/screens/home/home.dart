@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:pokemon/controllers/poke_controller.dart';
@@ -25,8 +26,10 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final auth = FirebaseAuth.instance;
   int _currentIndex = 0;
   final screens = [const Page1(), const Page3(), const Page2()];
+  final user = FirebaseAuth.instance.currentUser!;
 
   @override
   Widget build(BuildContext context) {
@@ -43,17 +46,17 @@ class _HomeState extends State<Home> {
           child: Drawer(
             child: Container(
               decoration: BoxDecoration(
-                color: Color.fromRGBO(56, 61, 93, 0.985),
+                color: Color.fromRGBO(29, 31, 40, 1),
               ),
               child: ListView(
                 children: [
-                  const UserAccountsDrawerHeader(
+                  UserAccountsDrawerHeader(
                       currentAccountPicture: CircleAvatar(
                         backgroundImage: NetworkImage(
                             'https://i.pinimg.com/564x/15/5e/a4/155ea4a6a22db66e8bf1eaba7349ffd8.jpg'),
                       ),
                       accountName: Text('Natanael Cano'),
-                      accountEmail: Text('rancho@humilde.com.mx')),
+                      accountEmail: Text('${user.email}')),
                   TextButton(
                     style: TextButton.styleFrom(
                       shape: RoundedRectangleBorder(
@@ -63,7 +66,7 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                       primary: Colors.white,
-                      backgroundColor: Color.fromRGBO(71, 76, 106, 0.85),
+                      backgroundColor: Color.fromRGBO(88, 89, 90, 0.239),
                     ),
                     onPressed: () {
                       Navigator.pushNamed(context, '/profile');
@@ -80,7 +83,7 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                       primary: Colors.white,
-                      backgroundColor: Color.fromRGBO(71, 76, 106, 0.85),
+                      backgroundColor: Color.fromRGBO(88, 89, 90, 0.239),
                     ),
                     onPressed: () {},
                     child: Icon(Icons.notifications,
@@ -95,9 +98,12 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                       primary: Colors.white,
-                      backgroundColor: Color.fromRGBO(71, 76, 106, 0.85),
+                      backgroundColor: Color.fromRGBO(88, 89, 90, 0.239),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      auth.signOut().then(
+                          (value) => Navigator.pushNamed(context, '/Login'));
+                    },
                     child: Icon(Icons.exit_to_app,
                         color: Color.fromRGBO(255, 178, 122, 1)),
                   ),
