@@ -40,6 +40,16 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
             ),
           ),
           Positioned(
+            top: 40,
+            right: 5,
+            child: IconButton(
+              icon: Icon(Icons.favorite),
+              color: Colors.white,
+              iconSize: 30,
+              onPressed: () {},
+            ),
+          ),
+          Positioned(
               top: 90,
               left: 20,
               child: Text(
@@ -50,7 +60,17 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                     fontSize: 30),
               )),
           Positioned(
-              top: 140,
+              top: 124,
+              left: 20,
+              child: Text(
+                "No. " + widget.pokemonDetail['id'].toString(),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                ),
+              )),
+          Positioned(
+              top: 150,
               left: 20,
               child: Container(
                 child: Padding(
@@ -240,32 +260,39 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                                     fontSize: 18,
                                   ),
                                 )),
-                                widget.pokemonDetail['prev_evolution'] != null ?
-                            SizedBox(
-                              height: 20,
-                              width: width * 0.45,
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: widget
-                                    .pokemonDetail['prev_evolution'].length,
-                                itemBuilder: (context, index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
-                                    child: Text(
-                                      widget.pokemonDetail['prev_evolution']
-                                          [index]['name'], style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold),
-                              
+                            widget.pokemonDetail['prev_evolution'] != null
+                                ? SizedBox(
+                                    height: 20,
+                                    width: width * 0.45,
+                                    child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: widget
+                                          .pokemonDetail['prev_evolution']
+                                          .length,
+                                      itemBuilder: (context, index) {
+                                        return Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 8.0),
+                                          child: Text(
+                                            widget.pokemonDetail[
+                                                    'prev_evolution'][index]
+                                                ['name'],
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        );
+                                      },
                                     ),
-                                  );
-                                },
-                              ),
-                            ): Text('Just Hatched', style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold),)
+                                  )
+                                : Text(
+                                    'Just Hatched',
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
+                                  )
                           ],
                         ),
                       ),
@@ -283,32 +310,39 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                                     fontSize: 18,
                                   ),
                                 )),
-                                widget.pokemonDetail['next_evolution'] != null ?
-                            SizedBox(
-                              height: 20,
-                              width: width * 0.45,
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: widget
-                                    .pokemonDetail['next_evolution'].length,
-                                itemBuilder: (context, index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
-                                    child: Text(
-                                      widget.pokemonDetail['next_evolution']
-                                          [index]['name'], style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold),
-                              
+                            widget.pokemonDetail['next_evolution'] != null
+                                ? SizedBox(
+                                    height: 20,
+                                    width: width * 0.45,
+                                    child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: widget
+                                          .pokemonDetail['next_evolution']
+                                          .length,
+                                      itemBuilder: (context, index) {
+                                        return Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 8.0),
+                                          child: Text(
+                                            widget.pokemonDetail[
+                                                    'next_evolution'][index]
+                                                ['name'],
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        );
+                                      },
                                     ),
-                                  );
-                                },
-                              ),
-                            ): Text('Max evolution', style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold),)
+                                  )
+                                : Text(
+                                    'Max evolution',
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
+                                  )
                           ],
                         ),
                       ),

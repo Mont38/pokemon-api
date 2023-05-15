@@ -1,4 +1,5 @@
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:pokemon/model/poke_model.dart';
 import 'dart:convert';
 
@@ -7,14 +8,21 @@ class PokeController {
       'https://raw.githubusercontent.com/Biuni/PokemonGO-Pokedex/master/pokedex.json';
 
   Future<PokeModel> getData() async {
-    var response = await http.get(Uri.parse(url));
-    var dataBindings;
-    if (response.statusCode == 200) {
-      var jsonString = response.body;
-      var jsonMap = json.decode(jsonString);
+    var dio = Dio();
+    var cacheManager = DioCacheManager(CacheConfig());
+    dio.interceptors.add(cacheManager.interceptor);
 
-      dataBindings = PokeModel.fromJson(jsonMap);
+    var response = await dio.get(
+      url,
+      options: buildCacheOptions(Duration(hours: 1)),
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = json.decode(response.data);
+      var dataBindings = PokeModel.fromJson(jsonResponse);
+      return dataBindings;
+    } else {
+      throw Exception('Failed to load data');
     }
-    return dataBindings;
   }
 }

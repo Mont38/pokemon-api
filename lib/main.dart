@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'POkemon',
+      title: 'Pokemon',
 
       // home: SplashScreen(),
       // We use routeName so that we don't need to remember the name

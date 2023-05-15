@@ -8,9 +8,10 @@ import 'package:pokemon/controllers/poke_controller.dart';
 import 'package:pokemon/firebase/firebase_service.dart';
 import 'package:pokemon/model/poke_model.dart';
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
+import 'package:dio_http_cache/dio_http_cache.dart';
 
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 import 'dart:core';
 
@@ -244,7 +245,7 @@ class _Page3State extends State<Page3> {
                   fit: BoxFit.fitWidth,
                 )),
             Positioned(
-              top: 80,
+              top: 120,
               left: 20,
               child: Text(
                 "PokeDex",
@@ -328,7 +329,19 @@ class _Page3State extends State<Page3> {
                                           ),
                                         ),
                                         Positioned(
-                                          top: 20,
+                                          top: 15,
+                                          left: 20,
+                                          child: Text(
+                                            "No. " + pokemon.id.toString(),
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                        Positioned(
+                                          top: 33,
                                           left: 20,
                                           child: Text(
                                             pokemon.name,
@@ -340,7 +353,7 @@ class _Page3State extends State<Page3> {
                                           ),
                                         ),
                                         Positioned(
-                                          top: 45,
+                                          top: 55,
                                           left: 20,
                                           child: Container(
                                             child: Padding(
@@ -438,21 +451,30 @@ class _Page3State extends State<Page3> {
   }
 
   void fetchPokemonData() async {
-    try {
-      final response = await http.get(Uri.parse(pokeApi));
-      if (response.statusCode == 200) {
-        final decodedJsonData = jsonDecode(response.body);
-        setState(() {
-          pokedexthis = decodedJsonData['pokemon'];
-        });
-      } else {
-        print(
-            'Failed to fetch Pokémon data. Error code: ${response.statusCode}');
-      }
-    } catch (error) {
-      print('Error occurred while fetching Pokémon data: $error');
+  try {
+    var dio = Dio();
+    var cacheManager = DioCacheManager(CacheConfig());
+    dio.interceptors.add(cacheManager.interceptor);
+
+    var response = await dio.get(
+      pokeApi,
+      options: buildCacheOptions(Duration(hours: 1)),
+    );
+
+    if (response.statusCode == 200) {
+      var decodedJsonData = jsonDecode(response.data);
+      var pokedexData = decodedJsonData['pokemon'] as List<dynamic>;
+      setState(() {
+        pokedexthis = pokedexData;
+      });
+    } else {
+      print('Failed to fetch Pokémon data. Error code: ${response.statusCode}');
     }
+  } catch (error) {
+    print('Error occurred while fetching Pokémon data: $error');
   }
+}
+
 
   fetchType(PokeModel? pokeModel, int index) {
     if (pokeModel != null) {
