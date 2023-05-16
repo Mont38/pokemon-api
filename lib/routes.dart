@@ -5,7 +5,7 @@ import 'package:pokemon/screens/Login/login.dart';
 import 'package:pokemon/screens/Register/Register.dart';
 import 'package:pokemon/screens/onboarding/PreviewPages.dart';
 import 'package:pokemon/screens/profile/profile_screen.dart';
-import 'package:pokemon/firebase/auth_user/auth_page.dart';
+import 'package:pokemon/screens/Login/forgotPass.dart';
 
 final Map<String, WidgetBuilder> routes = {
   Login.routeName: (context) => Login(),
@@ -14,4 +14,5 @@ final Map<String, WidgetBuilder> routes = {
   ProfileScreen.routeName: (context) => ProfileScreen(),
   AuthPage.routeName: (context) => AuthPage(),
   Register.routeName: (context) => Register(),
+  ForgotPass.routeName: (context) => ForgotPass(),
 };
