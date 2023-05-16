@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:pokemon/firebase/auth_user/auth_page.dart';
 import 'package:pokemon/screens/onboarding/PreviewPages.dart';
 import 'firebase_options.dart';
 import 'routes.dart';

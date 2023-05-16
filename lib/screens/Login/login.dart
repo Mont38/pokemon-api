@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pokemon/firebase/auth_user/auth_google.dart';
@@ -8,7 +6,6 @@ import 'package:pokemon/screens/Login/loading_modal.dart';
 import 'package:pokemon/screens/responsive/responsive.dart';
 import 'package:sign_button/constants.dart';
 import 'package:sign_button/create_button.dart';
-
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -25,11 +22,14 @@ final passwordController = TextEditingController();
 //se le puso OutlineInputBorder para poner la linea que rodea los bordes de la caja de texto
 class _LoginScreenState extends State<Login> {
   final auth = FirebaseAuth.instance;
+
   void singUserIn() async {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
-      Navigator.pop(context);
+      Navigator.pushNamed(context, AuthPage.routeName);
+
+      print('sing');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         //Wrong Email
@@ -161,7 +161,7 @@ class _LoginScreenState extends State<Login> {
               const Color.fromARGB(255, 77, 113, 164)),
         ),
         onPressed: () {
-          exit(0);
+          Navigator.pushNamed(context, '/Login');
         },
         child: const Icon(
           Icons.exit_to_app,
@@ -181,6 +181,7 @@ class _LoginScreenState extends State<Login> {
       buttonType: ButtonType.google,
       onPressed: () {
         AuthGoogle().signIngWithGoogle();
+        Navigator.pushNamed(context, AuthPage.routeName);
       },
     );
     const txt = Text(
@@ -204,6 +205,20 @@ class _LoginScreenState extends State<Login> {
                 decoration: TextDecoration.underline),
           )),
     );
+    final txtForgotPass = Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: TextButton(
+          onPressed: () {
+            Navigator.pushNamed(context, '/forgotPassword');
+          },
+          child: const Text(
+            'Forgot password?',
+            style: TextStyle(
+                color: Color.fromRGBO(255, 178, 122, 1),
+                fontSize: 16,
+                decoration: TextDecoration.underline),
+          )),
+    );
     final btnEmail = TextButton(
         style: ButtonStyle(
           foregroundColor: MaterialStateProperty.all<Color>(
@@ -217,8 +232,9 @@ class _LoginScreenState extends State<Login> {
           Future.delayed(Duration(milliseconds: 3000)).then((value) {
             isLoading = false;
             setState(() {});
-            print(emailController);
             singUserIn();
+
+            print(emailController);
           });
         },
         child: const Text('Sign in'));
@@ -244,42 +260,42 @@ class _LoginScreenState extends State<Login> {
                     children: [
                       Responsive(
                         mobile: MobileLoginScreen(
-                          txtEmail: txtEmail,
-                          spaceHorizontal: spaceHorizontal,
-                          txtPass: txtPass,
-                          btnEmail: btnEmail,
-                          btnGoogle: btnGoogle,
-                          btnFace: btnFace,
-                          btnGit: btnGit,
-                          txtRegister: txtRegister,
-                          imgLogo: imgLogo,
-                          backbutton: backbutton,
-                          txt: txt,
-                        ),
+                            txtEmail: txtEmail,
+                            spaceHorizontal: spaceHorizontal,
+                            txtPass: txtPass,
+                            btnEmail: btnEmail,
+                            btnGoogle: btnGoogle,
+                            btnFace: btnFace,
+                            btnGit: btnGit,
+                            txtRegister: txtRegister,
+                            imgLogo: imgLogo,
+                            backbutton: backbutton,
+                            txt: txt,
+                            txtForgotPass: txtForgotPass),
                         desktop: Desktop(
-                          imgLogoDesktop: imgLogoDesktop,
-                          txtEmail: txtEmail,
-                          spaceHorizontal: spaceHorizontal,
-                          txtPass: txtPass,
-                          btnEmail: btnEmail,
-                          btnGoogle: btnGoogle,
-                          btnFace: btnFace,
-                          btnGit: btnGit,
-                          backbutton: backbutton,
-                          txt: txt,
-                        ),
+                            imgLogoDesktop: imgLogoDesktop,
+                            txtEmail: txtEmail,
+                            spaceHorizontal: spaceHorizontal,
+                            txtPass: txtPass,
+                            btnEmail: btnEmail,
+                            btnGoogle: btnGoogle,
+                            btnFace: btnFace,
+                            btnGit: btnGit,
+                            backbutton: backbutton,
+                            txt: txt,
+                            txtForgotPass: txtForgotPass),
                         tablet: tablet(
-                          imgLogoTablet: imgLogoTablet,
-                          txtEmail: txtEmail,
-                          spaceHorizontal: spaceHorizontal,
-                          txtPass: txtPass,
-                          btnEmail: btnEmail,
-                          btnGoogle: btnGoogle,
-                          btnFace: btnFace,
-                          btnGit: btnGit,
-                          backbutton: backbutton,
-                          txt: txt,
-                        ),
+                            imgLogoTablet: imgLogoTablet,
+                            txtEmail: txtEmail,
+                            spaceHorizontal: spaceHorizontal,
+                            txtPass: txtPass,
+                            btnEmail: btnEmail,
+                            btnGoogle: btnGoogle,
+                            btnFace: btnFace,
+                            btnGit: btnGit,
+                            backbutton: backbutton,
+                            txt: txt,
+                            txtForgotPass: txtForgotPass),
                       ),
                     ],
                   ),
@@ -307,6 +323,7 @@ class Desktop extends StatelessWidget {
     required this.btnGit,
     required this.backbutton,
     required this.txt,
+    required this.txtForgotPass,
   });
 
   final Image imgLogoDesktop;
@@ -319,6 +336,7 @@ class Desktop extends StatelessWidget {
   final SignInButton btnGit;
   final ClipRRect backbutton;
   final Text txt;
+  final Padding txtForgotPass;
 
   @override
   Widget build(BuildContext context) {
@@ -346,6 +364,9 @@ class Desktop extends StatelessWidget {
                     spaceHorizontal,
                     spaceHorizontal,
                     btnEmail,
+                    spaceHorizontal,
+                    spaceHorizontal,
+                    txtForgotPass,
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 3),
                       child: Column(
@@ -388,6 +409,7 @@ class tablet extends StatelessWidget {
     required this.btnGit,
     required this.backbutton,
     required this.txt,
+    required this.txtForgotPass,
   });
 
   final Image imgLogoTablet;
@@ -400,6 +422,7 @@ class tablet extends StatelessWidget {
   final SignInButton btnGit;
   final ClipRRect backbutton;
   final Text txt;
+  final Padding txtForgotPass;
 
   @override
   Widget build(BuildContext context) {
@@ -427,6 +450,8 @@ class tablet extends StatelessWidget {
                     spaceHorizontal,
                     spaceHorizontal,
                     btnEmail,
+                    spaceHorizontal,
+                    spaceHorizontal,
                     SizedBox(
                       width: 900,
                       child: Column(children: [
@@ -468,6 +493,7 @@ class MobileLoginScreen extends StatelessWidget {
     required this.imgLogo,
     required this.backbutton,
     required this.txt,
+    required this.txtForgotPass,
   });
 
   final TextFormField txtEmail;
@@ -481,6 +507,7 @@ class MobileLoginScreen extends StatelessWidget {
   final Image imgLogo;
   final ClipRRect backbutton;
   final Text txt;
+  final Padding txtForgotPass;
 
   @override
   Widget build(BuildContext context) {
@@ -501,6 +528,8 @@ class MobileLoginScreen extends StatelessWidget {
           spaceHorizontal,
           btnEmail,
           spaceHorizontal,
+          spaceHorizontal,
+          txtForgotPass,
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

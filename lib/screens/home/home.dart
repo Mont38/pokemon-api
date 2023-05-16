@@ -47,16 +47,15 @@ class _HomeState extends State<Home> {
           child: Drawer(
             child: Container(
               decoration: BoxDecoration(
-                color: Color.fromRGBO(29, 31, 40, 1),
+                color: const Color.fromRGBO(29, 31, 40, 1),
               ),
               child: ListView(
                 children: [
                   UserAccountsDrawerHeader(
-                      currentAccountPicture: CircleAvatar(
-                        backgroundImage: NetworkImage(
-                            'https://i.pinimg.com/564x/15/5e/a4/155ea4a6a22db66e8bf1eaba7349ffd8.jpg'),
+                      currentAccountPicture: const CircleAvatar(
+                        backgroundImage: NetworkImage('{user.image}'),
                       ),
-                      accountName: Text('Natanael Cano'),
+                      accountName: Text('${user.displayName}'),
                       accountEmail: Text('${user.email}')),
                   TextButton(
                     style: TextButton.styleFrom(
@@ -102,7 +101,7 @@ class _HomeState extends State<Home> {
                       backgroundColor: Color.fromRGBO(88, 89, 90, 0.239),
                     ),
                     onPressed: () {
-                      auth.signOut().then(
+                      FirebaseAuth.instance.signOut().then(
                           (value) => Navigator.pushNamed(context, '/Login'));
                     },
                     child: Icon(Icons.exit_to_app,
@@ -179,7 +178,7 @@ class Page1 extends StatelessWidget {
           return ListView.builder(
             itemCount: snapshot.data.length,
             itemBuilder: (BuildContext context, int index) {
-              return Text(snapshot.data?[index]['name']);
+              return Text(snapshot.data?[index]['email']);
             },
           );
         } else {
@@ -451,30 +450,30 @@ class _Page3State extends State<Page3> {
   }
 
   void fetchPokemonData() async {
-  try {
-    var dio = Dio();
-    var cacheManager = DioCacheManager(CacheConfig());
-    dio.interceptors.add(cacheManager.interceptor);
+    try {
+      var dio = Dio();
+      var cacheManager = DioCacheManager(CacheConfig());
+      dio.interceptors.add(cacheManager.interceptor);
 
-    var response = await dio.get(
-      pokeApi,
-      options: buildCacheOptions(Duration(hours: 1)),
-    );
+      var response = await dio.get(
+        pokeApi,
+        options: buildCacheOptions(Duration(hours: 1)),
+      );
 
-    if (response.statusCode == 200) {
-      var decodedJsonData = jsonDecode(response.data);
-      var pokedexData = decodedJsonData['pokemon'] as List<dynamic>;
-      setState(() {
-        pokedexthis = pokedexData;
-      });
-    } else {
-      print('Failed to fetch Pokémon data. Error code: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        var decodedJsonData = jsonDecode(response.data);
+        var pokedexData = decodedJsonData['pokemon'] as List<dynamic>;
+        setState(() {
+          pokedexthis = pokedexData;
+        });
+      } else {
+        print(
+            'Failed to fetch Pokémon data. Error code: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error occurred while fetching Pokémon data: $error');
     }
-  } catch (error) {
-    print('Error occurred while fetching Pokémon data: $error');
   }
-}
-
 
   fetchType(PokeModel? pokeModel, int index) {
     if (pokeModel != null) {

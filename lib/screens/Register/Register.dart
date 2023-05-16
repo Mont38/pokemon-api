@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pokemon/screens/Login/loading_modal.dart';
 import 'package:pokemon/screens/responsive/responsive.dart';
-import 'package:sign_button/constants.dart';
-import 'package:sign_button/create_button.dart';
+import '../../firebase/auth_user/auth_page.dart';
+import '../../firebase/firebase_service.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -13,6 +12,10 @@ class Register extends StatefulWidget {
   @override
   State<Register> createState() => _RegisterScreenState();
 }
+
+final emailController = TextEditingController();
+final passwordController = TextEditingController();
+final nameController = TextEditingController();
 
 // final emailController = TextEditingController();
 // final passwordController = TextEditingController();
@@ -24,12 +27,20 @@ class Register extends StatefulWidget {
 //lo debajo son text from donde se ponen los recuadros donde van tanto el correo como la contraseña
 //se le puso OutlineInputBorder para poner la linea que rodea los bordes de la caja de texto
 class _RegisterScreenState extends State<Register> {
+  final auth = FirebaseAuth.instance;
+
+  void RegisterUser() async {
+    await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailController.text, password: passwordController.text);
+    Navigator.pushNamed(context, AuthPage.routeName);
+  }
+
   bool isLoading = false;
 //textfields-------------------------------
   final txtName = TextFormField(
-    // controller: emailController,
+    controller: nameController,
     decoration: InputDecoration(
-      labelText: 'Email',
+      labelText: 'name',
       labelStyle: TextStyle(color: Color.fromRGBO(244, 244, 244, 1)),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
@@ -58,7 +69,7 @@ class _RegisterScreenState extends State<Register> {
     ),
   );
   final txtEmail = TextFormField(
-    // controller: emailController,
+    controller: emailController,
     decoration: InputDecoration(
       labelText: 'Email',
       labelStyle: TextStyle(color: Color.fromRGBO(244, 244, 244, 1)),
@@ -91,6 +102,7 @@ class _RegisterScreenState extends State<Register> {
 
   final txtPass = TextFormField(
     // controller: passwordController,
+    controller: passwordController,
     decoration: InputDecoration(
       labelText: 'Password',
       labelStyle: TextStyle(color: Color.fromRGBO(244, 244, 244, 1)),
@@ -153,50 +165,16 @@ class _RegisterScreenState extends State<Register> {
               const Color.fromARGB(255, 77, 113, 164)),
         ),
         onPressed: () {
-          Navigator.pushNamed(context, '/previewPages');
+          Navigator.pushNamed(context, '/Login');
         },
         child: const Icon(
-          Icons.arrow_back_rounded,
+          Icons.arrow_back_ios,
         ),
       ),
     );
     //buttons authentication -------------------------------
-    final btnFace = SignInButton.mini(
-      buttonType: ButtonType.facebook,
-      onPressed: () {},
-    );
-    final btnGit = SignInButton.mini(
-      buttonType: ButtonType.github,
-      onPressed: () {},
-    );
-    final btnGoogle = SignInButton.mini(
-      buttonType: ButtonType.google,
-      onPressed: () {
-        Navigator.pushNamed(context, '/');
-      },
-    );
-    const txt = Text(
-      "Don't have an account?",
-      style: TextStyle(
-        color: Color.fromARGB(255, 255, 255, 255),
-        fontSize: 16,
-      ),
-    );
-    final txtRegister = Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: TextButton(
-          onPressed: () {
-            Navigator.pushNamed(context, '/register');
-          },
-          child: const Text(
-            'Sign up',
-            style: TextStyle(
-                color: Color.fromRGBO(255, 178, 122, 1),
-                fontSize: 16,
-                decoration: TextDecoration.underline),
-          )),
-    );
-    final btnEmail = TextButton(
+
+    final btnRegister = TextButton(
         style: ButtonStyle(
           foregroundColor: MaterialStateProperty.all<Color>(
               const Color.fromARGB(255, 13, 13, 13)),
@@ -209,10 +187,15 @@ class _RegisterScreenState extends State<Register> {
           Future.delayed(Duration(milliseconds: 3000)).then((value) {
             isLoading = false;
             setState(() {});
-            Navigator.pushNamed(context, '/auth');
+            addUsers(
+                emailController.text,
+                passwordController.text,
+                "https://www.shutterstock.com/image-vector/email-icon-envelope-mail-services-260nw-1379676980.jpg",
+                nameController.text);
+            RegisterUser();
           });
         },
-        child: const Text('Sign in'));
+        child: const Text('Register'));
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -238,14 +221,9 @@ class _RegisterScreenState extends State<Register> {
                           txtEmail: txtEmail,
                           spaceHorizontal: spaceHorizontal,
                           txtPass: txtPass,
-                          btnEmail: btnEmail,
-                          btnGoogle: btnGoogle,
-                          btnFace: btnFace,
-                          btnGit: btnGit,
-                          txtRegister: txtRegister,
+                          btnRegister: btnRegister,
                           imgLogo: imgLogo,
                           backbutton: backbutton,
-                          txt: txt,
                           txtName: txtName,
                         ),
                         desktop: Desktop(
@@ -253,12 +231,8 @@ class _RegisterScreenState extends State<Register> {
                           txtEmail: txtEmail,
                           spaceHorizontal: spaceHorizontal,
                           txtPass: txtPass,
-                          btnEmail: btnEmail,
-                          btnGoogle: btnGoogle,
-                          btnFace: btnFace,
-                          btnGit: btnGit,
+                          btnRegister: btnRegister,
                           backbutton: backbutton,
-                          txt: txt,
                           txtName: txtName,
                         ),
                         tablet: tablet(
@@ -266,12 +240,8 @@ class _RegisterScreenState extends State<Register> {
                           txtEmail: txtEmail,
                           spaceHorizontal: spaceHorizontal,
                           txtPass: txtPass,
-                          btnEmail: btnEmail,
-                          btnGoogle: btnGoogle,
-                          btnFace: btnFace,
-                          btnGit: btnGit,
+                          btnRegister: btnRegister,
                           backbutton: backbutton,
-                          txt: txt,
                           txtName: txtName,
                         ),
                       ),
@@ -288,31 +258,25 @@ class _RegisterScreenState extends State<Register> {
 }
 
 class Desktop extends StatelessWidget {
-  const Desktop(
-      {super.key,
-      required this.imgLogoDesktop,
-      required this.txtEmail,
-      required this.spaceHorizontal,
-      required this.txtPass,
-      required this.btnEmail,
-      required this.btnGoogle,
-      required this.btnFace,
-      required this.btnGit,
-      required this.backbutton,
-      required this.txt,
-      required this.txtName});
+  const Desktop({
+    super.key,
+    required this.imgLogoDesktop,
+    required this.txtEmail,
+    required this.spaceHorizontal,
+    required this.txtPass,
+    required this.txtName,
+    required this.btnRegister,
+    required this.backbutton,
+  });
 
   final Image imgLogoDesktop;
   final TextFormField txtEmail;
   final SizedBox spaceHorizontal;
   final TextFormField txtPass;
   final TextFormField txtName;
-  final TextButton btnEmail;
-  final SignInButton btnGoogle;
-  final SignInButton btnFace;
-  final SignInButton btnGit;
+
+  final TextButton btnRegister;
   final ClipRRect backbutton;
-  final Text txt;
 
   @override
   Widget build(BuildContext context) {
@@ -342,23 +306,14 @@ class Desktop extends StatelessWidget {
                     spaceHorizontal,
                     spaceHorizontal,
                     spaceHorizontal,
-                    btnEmail,
+                    btnRegister,
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 3),
                       child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             spaceHorizontal,
-                            spaceHorizontal,
-                            spaceHorizontal,
-                            spaceHorizontal,
-                            btnGoogle,
-                            spaceHorizontal,
-                            btnFace,
-                            spaceHorizontal,
-                            btnGit,
-                            spaceHorizontal,
-                            backbutton
+                            backbutton,
                           ]),
                     ),
                   ],
@@ -379,26 +334,18 @@ class tablet extends StatelessWidget {
     required this.txtEmail,
     required this.spaceHorizontal,
     required this.txtPass,
-    required this.btnEmail,
-    required this.btnGoogle,
-    required this.btnFace,
-    required this.btnGit,
-    required this.backbutton,
-    required this.txt,
     required this.txtName,
+    required this.btnRegister,
+    required this.backbutton,
   });
 
   final Image imgLogoTablet;
   final TextFormField txtEmail;
+  final TextFormField txtName;
   final SizedBox spaceHorizontal;
   final TextFormField txtPass;
-  final TextFormField txtName;
-  final TextButton btnEmail;
-  final SignInButton btnGoogle;
-  final SignInButton btnFace;
-  final SignInButton btnGit;
+  final TextButton btnRegister;
   final ClipRRect backbutton;
-  final Text txt;
 
   @override
   Widget build(BuildContext context) {
@@ -420,8 +367,6 @@ class tablet extends StatelessWidget {
                   children: [
                     txtName,
                     spaceHorizontal,
-                    spaceHorizontal,
-                    spaceHorizontal,
                     txtEmail,
                     spaceHorizontal,
                     spaceHorizontal,
@@ -429,21 +374,12 @@ class tablet extends StatelessWidget {
                     spaceHorizontal,
                     spaceHorizontal,
                     spaceHorizontal,
-                    btnEmail,
+                    btnRegister,
                     SizedBox(
                       width: 900,
                       child: Column(children: [
                         spaceHorizontal,
-                        spaceHorizontal,
-                        spaceHorizontal,
-                        spaceHorizontal,
-                        btnGoogle,
-                        spaceHorizontal,
-                        btnFace,
-                        spaceHorizontal,
-                        btnGit,
-                        spaceHorizontal,
-                        backbutton
+                        backbutton,
                       ]),
                     ),
                   ],
@@ -463,29 +399,19 @@ class MobileLoginScreen extends StatelessWidget {
     required this.txtEmail,
     required this.spaceHorizontal,
     required this.txtPass,
-    required this.btnEmail,
-    required this.btnGoogle,
-    required this.btnFace,
-    required this.btnGit,
-    required this.txtRegister,
+    required this.btnRegister,
     required this.imgLogo,
     required this.backbutton,
-    required this.txt,
     required this.txtName,
   });
 
   final TextFormField txtEmail;
   final SizedBox spaceHorizontal;
   final TextFormField txtPass;
-  final TextButton btnEmail;
-  final SignInButton btnGoogle;
-  final SignInButton btnFace;
-  final SignInButton btnGit;
-  final Padding txtRegister;
+  final TextButton btnRegister;
+  final TextFormField txtName;
   final Image imgLogo;
   final ClipRRect backbutton;
-  final Text txt;
-  final TextFormField txtName;
 
   @override
   Widget build(BuildContext context) {
@@ -506,26 +432,8 @@ class MobileLoginScreen extends StatelessWidget {
           spaceHorizontal,
           txtPass,
           spaceHorizontal,
-          btnEmail,
+          btnRegister,
           spaceHorizontal,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              btnGoogle,
-              spaceHorizontal,
-              btnFace,
-              spaceHorizontal,
-              btnGit,
-              spaceHorizontal,
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              txt,
-              txtRegister,
-            ],
-          ),
           spaceHorizontal,
           backbutton,
         ],

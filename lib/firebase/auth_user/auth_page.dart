@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pokemon/firebase/firebase_service.dart';
 import 'package:pokemon/screens/Login/login.dart';
 import 'package:pokemon/screens/Register/Register.dart';
 import 'package:pokemon/screens/home/home.dart';
@@ -21,9 +22,10 @@ class _AuthPageState extends State<AuthPage> {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             try {
-              if (snapshot.hasData) {
+              if (snapshot.hasData && snapshot.data != null) {
                 return Home();
               } else {
+                print('log');
                 return Login();
               }
             } catch (error) {
