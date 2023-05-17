@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pokemon/firebase/auth_user/auth_google.dart';
 import 'package:pokemon/firebase/auth_user/auth_page.dart';
+import 'package:pokemon/firebase/firebase_service.dart';
 import 'package:pokemon/screens/Login/loading_modal.dart';
 import 'package:pokemon/screens/responsive/responsive.dart';
 import 'package:sign_button/constants.dart';
@@ -161,7 +162,8 @@ class _LoginScreenState extends State<Login> {
               const Color.fromARGB(255, 77, 113, 164)),
         ),
         onPressed: () {
-          Navigator.pushNamed(context, '/Login');
+          // Navigator.pushNamed(context, '/Login');
+          AuthGoogle().borrarUsuario();
         },
         child: const Icon(
           Icons.exit_to_app,
@@ -180,8 +182,10 @@ class _LoginScreenState extends State<Login> {
     final btnGoogle = SignInButton.mini(
       buttonType: ButtonType.google,
       onPressed: () {
-        AuthGoogle().signIngWithGoogle();
-        Navigator.pushNamed(context, AuthPage.routeName);
+        AuthGoogle().verificarYCrearUsuario(context);
+
+        //Navigator.pushNamed(context, '/Password_Google');
+        //Navigator.pushNamed(context, AuthPage.routeName);
       },
     );
     const txt = Text(
