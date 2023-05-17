@@ -21,6 +21,7 @@ Future<void> addUsers(
       {"email": email, "password": password, "image": image, "name": name});
 }
 
+<<<<<<< HEAD
 void verificarCampoContrasena(BuildContext context) async {
   User? currentUser = FirebaseAuth.instance.currentUser;
 
@@ -40,3 +41,37 @@ void verificarCampoContrasena(BuildContext context) async {
     Navigator.pushNamed(context, '/Password_Google');
   }
 }
+=======
+Future<List> getFavorites() async {
+  List favorites = [];
+  CollectionReference collectionReferenceFavorites = db.collection('favorites');
+  QuerySnapshot queryFavorites = await collectionReferenceFavorites.get();
+  queryFavorites.docs.forEach((documento) {
+    favorites.add(documento.data());
+  });
+
+  return favorites;
+}
+
+Future<void> insertFavorites(String user_id, String pokemon_id) async {
+  await db.collection('favorites').add({
+    'id_user': user_id,
+    'id_pokemon': pokemon_id,
+  });
+}
+
+Future<List<Map<String, dynamic>>> getFavoritesByUserId(String userId) async {
+  List<Map<String, dynamic>> favorites = [];
+  
+  QuerySnapshot querySnapshot = await db
+      .collection('favorites')
+      .where('id_user', isEqualTo: userId)
+      .get();
+  
+  favorites = querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+  
+  return favorites;
+}
+
+
+>>>>>>> 3770f02442e2751769f5075b86a00ce665a70da4

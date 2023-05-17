@@ -166,28 +166,203 @@ class _HomeState extends State<Home> {
   }
 }
 
-class Page1 extends StatelessWidget {
+class Page1 extends StatefulWidget {
   const Page1({Key? key}) : super(key: key);
 
   @override
+  _Page1State createState() => _Page1State();
+}
+
+class _Page1State extends State<Page1> {
+  late Future<PokeModel> _pokeDataModel;
+
+  final userPage1 = FirebaseAuth.instance.currentUser!;
+  List<Map<String, dynamic>> favorites = [];
+  var pokeApi =
+      "https://raw.githubusercontent.com/Biuni/PokemonGO-Pokedex/master/pokedex.json";
+  late List<dynamic> pokedexthis = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchFavorites();
+    _pokeDataModel = PokeController().getData();
+    fetchFavoritesAndPokemonData();
+  }
+
+  Future<void> fetchFavorites() async {
+    // Aquí puedes usar el user_id específico que deseas consultar
+    String userId = userPage1.uid.toString();
+
+    List<Map<String, dynamic>> userFavorites =
+        await getFavoritesByUserId(userId);
+
+    setState(() {
+      favorites = userFavorites;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getUser(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData) {
-          return ListView.builder(
-            itemCount: snapshot.data.length,
-            itemBuilder: (BuildContext context, int index) {
-              return Text(snapshot.data?[index]['email']);
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            itemCount: pokedexthis.length,
+            itemBuilder: (context, index) {
+              final pokemon = pokedexthis[index];
+              final id = pokemon['id'];
+              final name = pokemon['name'];
+              final type = pokemon['type'][0];
+
+              Color backgroundColor = Colors.white;
+
+              if (type == 'Grass') {
+                backgroundColor = Colors.greenAccent;
+              } else if (type == 'Fire') {
+                backgroundColor = Colors.redAccent;
+              } else if (type == 'Water') {
+                backgroundColor = Colors.blue;
+              } else if (type == 'Electric') {
+                backgroundColor = Colors.yellow;
+              } else if (type == 'Rock') {
+                backgroundColor = Colors.grey;
+              } else if (type == 'Ground') {
+                backgroundColor = Colors.brown;
+              } else if (type == 'Psychic') {
+                backgroundColor = Colors.indigo;
+              } else if (type == 'Fighting') {
+                backgroundColor = Colors.orange;
+              } else if (type == 'Bug') {
+                backgroundColor = Colors.lightGreenAccent;
+              } else if (type == 'Ghost') {
+                backgroundColor = Colors.deepPurple;
+              } else if (type == 'Poison') {
+                backgroundColor = Colors.deepPurpleAccent;
+              } else if (type == 'Normal') {
+                backgroundColor = Colors.black26;
+              } else {
+                backgroundColor = Colors.pink;
+              }
+
+              return Card(
+                color: backgroundColor,
+                child: ListTile(
+                  leading: Text('No. ' + id.toString()),
+                  title: Text(name),
+                  subtitle: Text(type),
+                  onTap: () {
+                    //detail screen
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => PokemonDetailScreen(
+                                pokemonDetail: pokedexthis[index],
+                                color: type == 'Grass'
+                                    ? Colors.greenAccent
+                                    : type == "Fire"
+                                        ? Colors.redAccent
+                                        : type == "Water"
+                                            ? Colors.blue
+                                            : type == "Electric"
+                                                ? Colors.yellow
+                                                : type == "Rock"
+                                                    ? Colors.grey
+                                                    : type == "Ground"
+                                                        ? Colors.brown
+                                                        : type == "Psychic"
+                                                            ? Colors.indigo
+                                                            : type == "Fighting"
+                                                                ? Colors.orange
+                                                                : type == "Bug"
+                                                                    ? Colors
+                                                                        .lightGreenAccent
+                                                                    : type ==
+                                                                            "Ghost"
+                                                                        ? Colors
+                                                                            .deepPurple
+                                                                        : type ==
+                                                                                "Poison"
+                                                                            ? Colors.deepPurpleAccent
+                                                                            : type == "Normal"
+                                                                                ? Colors.black26
+                                                                                : Colors.pink,
+                                heroTag: index)));
+                  },
+                ),
+              );
             },
-          );
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
+          ),
+        ),
+      ],
     );
+  }
+
+  void fetchFavoritesAndPokemonData() async {
+    String userId = userPage1.uid.toString();
+    List<Map<String, dynamic>> userFavorites =
+        await getFavoritesByUserId(userId);
+
+    List<dynamic> pokemonList = [];
+
+    for (var favorite in userFavorites) {
+      String pokemonId = favorite['id_pokemon'];
+      var pokemon = await fetchPokemonData(pokemonId);
+      if (pokemon != null) {
+        pokemonList.add(pokemon);
+      }
+    }
+
+    setState(() {
+      pokedexthis = pokemonList;
+    });
+  }
+
+  Future<dynamic> fetchPokemonData(String pokemonId) async {
+    try {
+      var dio = Dio();
+      var cacheManager = DioCacheManager(CacheConfig());
+      dio.interceptors.add(cacheManager.interceptor);
+
+      var response = await dio.get(
+        pokeApi,
+        options: buildCacheOptions(Duration(hours: 1)),
+      );
+
+      if (response.statusCode == 200) {
+        var decodedJsonData = jsonDecode(response.data);
+        var pokedexData = decodedJsonData['pokemon'] as List<dynamic>;
+
+        var pokemon = pokedexData.firstWhere(
+          (pokemon) => pokemon['id'].toString() == pokemonId,
+          orElse: () => null,
+        );
+
+        return pokemon;
+      } else {
+        print(
+            'Failed to fetch Pokémon data. Error code: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error occurred while fetching Pokémon data: $error');
+    }
+
+    return null;
+  }
+
+  fetchType(PokeModel? pokeModel, int index) {
+    if (pokeModel != null) {
+      final pokemon = pokeModel.pokemon[index];
+      final types = pokemon.type;
+
+      if (types != null) {
+        return types.map((type) => type.toString()).toList();
+      }
+    }
+
+    return [];
   }
 }
 
