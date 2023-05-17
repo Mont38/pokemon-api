@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pokemon/firebase/firebase_service.dart';
 
 class PokemonDetailScreen extends StatefulWidget {
   final pokemonDetail;
@@ -17,6 +19,9 @@ class PokemonDetailScreen extends StatefulWidget {
 }
 
 class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+  late List<dynamic> favorites;
+  final actualUser = FirebaseAuth.instance.currentUser!;
+
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
@@ -43,11 +48,18 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
             top: 40,
             right: 5,
             child: IconButton(
-              icon: Icon(Icons.favorite),
-              color: Colors.white,
-              iconSize: 30,
-              onPressed: () {},
-            ),
+                icon: Icon(Icons.favorite),
+                color: Colors.white,
+                iconSize: 30,
+                onPressed: () {
+                  final pokemonId = widget.pokemonDetail['id'].toString();
+                  insertFavorites(actualUser.uid, pokemonId);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Agregado a favoritos...'),
+                    ),
+                  );
+                }),
           ),
           Positioned(
               top: 90,
