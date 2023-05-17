@@ -21,7 +21,6 @@ Future<void> addUsers(
       {"email": email, "password": password, "image": image, "name": name});
 }
 
-<<<<<<< HEAD
 void verificarCampoContrasena(BuildContext context) async {
   User? currentUser = FirebaseAuth.instance.currentUser;
 
@@ -41,7 +40,7 @@ void verificarCampoContrasena(BuildContext context) async {
     Navigator.pushNamed(context, '/Password_Google');
   }
 }
-=======
+
 Future<List> getFavorites() async {
   List favorites = [];
   CollectionReference collectionReferenceFavorites = db.collection('favorites');
@@ -73,5 +72,19 @@ Future<List<Map<String, dynamic>>> getFavoritesByUserId(String userId) async {
   return favorites;
 }
 
+Future<List<String>> getFavoritePokemonIdsByUserId(String userId) async {
+  List<String> favoritePokemonIds = [];
 
->>>>>>> 3770f02442e2751769f5075b86a00ce665a70da4
+  QuerySnapshot querySnapshot = await db
+      .collection('favorites')
+      .where('id_user', isEqualTo: userId)
+      .get();
+
+  favoritePokemonIds = querySnapshot.docs.map((doc) => doc['id_pokemon'] as String).toList();
+
+  return favoritePokemonIds;
+}
+
+
+
+

@@ -51,14 +51,25 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                 icon: Icon(Icons.favorite),
                 color: Colors.white,
                 iconSize: 30,
-                onPressed: () {
+                onPressed: () async {
                   final pokemonId = widget.pokemonDetail['id'].toString();
-                  insertFavorites(actualUser.uid, pokemonId);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Agregado a favoritos...'),
-                    ),
-                  );
+                  List<String> userFavoritePokemonIds =
+                      await getFavoritePokemonIdsByUserId(actualUser.uid);
+
+                  if (userFavoritePokemonIds.contains(pokemonId)) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('El Pokémon ya está en favoritos.'),
+                      ),
+                    );
+                  } else {
+                    insertFavorites(actualUser.uid, pokemonId);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Agregado a favoritos...'),
+                      ),
+                    );
+                  }
                 }),
           ),
           Positioned(
@@ -355,6 +366,19 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold),
                                   )
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Container(
+                                width: width * 0.3,
+                                child: IconButton(
+                                    icon: Icon(Icons.delete),
+                                    onPressed: () async {})),
                           ],
                         ),
                       ),

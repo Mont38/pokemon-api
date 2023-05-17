@@ -493,6 +493,8 @@ class _Page3State extends State<Page3> {
                                     ),
                                     child: Stack(
                                       children: [
+                                        
+                                        /*
                                         Positioned(
                                           bottom: -10,
                                           right: -10,
@@ -501,7 +503,7 @@ class _Page3State extends State<Page3> {
                                             height: 100,
                                             fit: BoxFit.fitHeight,
                                           ),
-                                        ),
+                                        ),*/
                                         Positioned(
                                           top: 15,
                                           left: 20,
