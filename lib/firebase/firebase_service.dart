@@ -53,10 +53,10 @@ Future<List> getFavorites() async {
   return favorites;
 }
 
-Future<void> insertFavorites(String user_id, String pokemon_id) async {
+Future<void> insertFavorites(String userId, String pokemonId) async {
   await db.collection('favorites').add({
-    'id_user': user_id,
-    'id_pokemon': pokemon_id,
+    'id_user': userId,
+    'id_pokemon': pokemonId,
   });
 }
 
@@ -75,7 +75,6 @@ Future<List<Map<String, dynamic>>> getFavoritesByUserId(String userId) async {
   return favorites;
 }
 
-
 Future<List<String>> getFavoritePokemonIdsByUserId(String userId) async {
   List<String> favoritePokemonIds = [];
 
@@ -84,7 +83,8 @@ Future<List<String>> getFavoritePokemonIdsByUserId(String userId) async {
       .where('id_user', isEqualTo: userId)
       .get();
 
-  favoritePokemonIds = querySnapshot.docs.map((doc) => doc['id_pokemon'] as String).toList();
+  favoritePokemonIds =
+      querySnapshot.docs.map((doc) => doc['id_pokemon'] as String).toList();
 
   return favoritePokemonIds;
 }
@@ -116,11 +116,10 @@ Stream<List<Map<String, dynamic>>> getFavoritesStreamByUserId(String userId) {
       .collection('favorites')
       .where('id_user', isEqualTo: userId)
       .snapshots()
-      .map((snapshot) => snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList());
+      .map((snapshot) => snapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList());
 }
-
-
-
 
 // Verificar el estado de autenticación
 void checkAuthenticationStatus() {
@@ -161,3 +160,25 @@ Future<String> getUserDisplayNameFromFirestore(String userId) async {
   }
 }
 
+// Future<String> Getuserss() async {
+//   FirebaseAuth auth = FirebaseAuth.instance;
+//   User? user = auth.currentUser;
+//   if (user != null) {
+//     String userId = user.uid;
+
+//     FirebaseFirestore firestore = FirebaseFirestore.instance;
+//     CollectionReference usersCollection = firestore.collection('users');
+//     DocumentSnapshot userSnapshot = await usersCollection.doc(userId).get();
+
+//     if (userSnapshot.exists) {
+//       Map<String, dynamic> userData =
+//           userSnapshot.data() as Map<String, dynamic>;
+//       String username = userData['name'].toString();
+//       return username;
+//       // Aquí tienes todos los datos del usuario en el mapa `userData`
+//       // Puedes acceder a los campos específicos utilizando su nombre, por ejemplo, `userData['nombre']`
+//     }
+//   } else {
+//     return null;
+//   }
+// }
