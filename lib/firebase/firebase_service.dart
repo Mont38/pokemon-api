@@ -75,7 +75,7 @@ Future<List<Map<String, dynamic>>> getFavoritesByUserId(String userId) async {
   return favorites;
 }
 
-<<<<<<< Updated upstream
+
 Future<List<String>> getFavoritePokemonIdsByUserId(String userId) async {
   List<String> favoritePokemonIds = [];
 
@@ -122,7 +122,6 @@ Stream<List<Map<String, dynamic>>> getFavoritesStreamByUserId(String userId) {
 
 
 
-=======
 // Verificar el estado de autenticación
 void checkAuthenticationStatus() {
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -161,4 +160,4 @@ Future<String> getUserDisplayNameFromFirestore(String userId) async {
     return 'Error al obtener el nombre';
   }
 }
->>>>>>> Stashed changes
+
