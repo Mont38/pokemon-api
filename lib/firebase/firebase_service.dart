@@ -34,6 +34,7 @@ void verificarCampoContrasena(BuildContext context) async {
       (snapshot.data() as Map<String, dynamic>).containsKey('password')) {
     print('El campo "contrasena" existe para el usuario actual.');
 
+    checkAuthenticationStatus();
     Navigator.pushNamed(context, '/Home');
   } else {
     print('El campo "contrasena" no existe para el usuario actual.');
@@ -61,17 +62,20 @@ Future<void> insertFavorites(String user_id, String pokemon_id) async {
 
 Future<List<Map<String, dynamic>>> getFavoritesByUserId(String userId) async {
   List<Map<String, dynamic>> favorites = [];
-  
+
   QuerySnapshot querySnapshot = await db
       .collection('favorites')
       .where('id_user', isEqualTo: userId)
       .get();
-  
-  favorites = querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
-  
+
+  favorites = querySnapshot.docs
+      .map((doc) => doc.data() as Map<String, dynamic>)
+      .toList();
+
   return favorites;
 }
 
+<<<<<<< Updated upstream
 Future<List<String>> getFavoritePokemonIdsByUserId(String userId) async {
   List<String> favoritePokemonIds = [];
 
@@ -118,3 +122,43 @@ Stream<List<Map<String, dynamic>>> getFavoritesStreamByUserId(String userId) {
 
 
 
+=======
+// Verificar el estado de autenticación
+void checkAuthenticationStatus() {
+  FirebaseAuth auth = FirebaseAuth.instance;
+  User? user = auth.currentUser;
+
+  if (user != null) {
+    // El usuario está autenticado
+    if (user.providerData
+        .any((userInfo) => userInfo.providerId == 'google.com')) {
+      // El usuario se autenticó con Google
+      print('El usuario está autenticado con Google');
+    } else if (user.providerData
+        .any((userInfo) => userInfo.providerId == 'password')) {
+      // El usuario se autenticó con correo electrónico y contraseña
+      print('El usuario está autenticado con correo electrónico y contraseña');
+    }
+  } else {
+    // El usuario no está autenticado
+    print('El usuario no está autenticado');
+  }
+}
+
+Future<String> getUserDisplayNameFromFirestore(String userId) async {
+  final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
+
+  try {
+    final userData = await userRef.get();
+    if (userData.exists) {
+      final displayName = userData.get('name') as String;
+      return displayName;
+    } else {
+      return 'Nombre no encontrado'; // O un valor predeterminado en caso de que el campo "name" no exista
+    }
+  } catch (e) {
+    print('Error al obtener el nombre del usuario: $e');
+    return 'Error al obtener el nombre';
+  }
+}
+>>>>>>> Stashed changes

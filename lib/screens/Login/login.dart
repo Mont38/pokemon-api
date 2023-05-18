@@ -40,6 +40,7 @@ class _LoginScreenState extends State<Login> {
         wrongPassword();
       }
     }
+    checkAuthenticationStatus();
   }
 
   void wrongPassword() {

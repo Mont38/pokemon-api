@@ -52,8 +52,8 @@ class _HomeState extends State<Home> {
               child: ListView(
                 children: [
                   UserAccountsDrawerHeader(
-                      currentAccountPicture: const CircleAvatar(
-                        backgroundImage: NetworkImage('{user.image}'),
+                      currentAccountPicture: CircleAvatar(
+                        backgroundImage: NetworkImage(user.photoURL.toString()),
                       ),
                       accountName: Text('${user.displayName}'),
                       accountEmail: Text('${user.email}')),
