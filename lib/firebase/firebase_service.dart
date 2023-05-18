@@ -85,6 +85,36 @@ Future<List<String>> getFavoritePokemonIdsByUserId(String userId) async {
   return favoritePokemonIds;
 }
 
+Future<void> removeFavorite(String userId, String pokemonId) async {
+  QuerySnapshot querySnapshot = await db
+      .collection('favorites')
+      .where('id_user', isEqualTo: userId)
+      .where('id_pokemon', isEqualTo: pokemonId)
+      .get();
+
+  querySnapshot.docs.forEach((doc) {
+    doc.reference.delete();
+  });
+}
+
+Future<bool> checkIfPokemonIsFavorite(String userId, String pokemonId) async {
+  QuerySnapshot querySnapshot = await db
+      .collection('favorites')
+      .where('id_user', isEqualTo: userId)
+      .where('id_pokemon', isEqualTo: pokemonId)
+      .get();
+
+  return querySnapshot.docs.isNotEmpty;
+}
+
+Stream<List<Map<String, dynamic>>> getFavoritesStreamByUserId(String userId) {
+  return db
+      .collection('favorites')
+      .where('id_user', isEqualTo: userId)
+      .snapshots()
+      .map((snapshot) => snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList());
+}
+
 
 
 

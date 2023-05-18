@@ -152,12 +152,12 @@ class _HomeState extends State<Home> {
             GButton(
               icon: Icons.catching_pokemon_outlined,
               iconColor: Colors.red,
-              text: "pokemones",
+              text: "Pokedex",
             ),
             GButton(
               icon: Icons.backpack,
               iconColor: Color.fromARGB(255, 246, 125, 49),
-              text: "inventory",
+              text: "User",
             ),
           ],
         ),
@@ -185,9 +185,9 @@ class _Page1State extends State<Page1> {
   @override
   void initState() {
     super.initState();
-    fetchFavorites();
+    
     _pokeDataModel = PokeController().getData();
-    fetchFavoritesAndPokemonData();
+    
   }
 
   Future<void> fetchFavorites() async {
@@ -206,6 +206,8 @@ class _Page1State extends State<Page1> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
+    fetchFavorites();
+    fetchFavoritesAndPokemonData();
     return Column(
       children: [
         Expanded(
