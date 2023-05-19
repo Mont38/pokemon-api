@@ -30,9 +30,10 @@ class _RegisterScreenState extends State<Register> {
   final auth = FirebaseAuth.instance;
 
   void RegisterUser() async {
-    await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text, password: passwordController.text);
-    Navigator.pushNamed(context, AuthPage.routeName);
+    await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(
+            email: emailController.text, password: passwordController.text)
+        .then((value) => Navigator.popAndPushNamed(context, '/verify'));
   }
 
   bool isLoading = false;
@@ -188,11 +189,12 @@ class _RegisterScreenState extends State<Register> {
             isLoading = false;
             setState(() {});
             addUsers(
-                emailController.text,
-                passwordController.text,
-                "https://www.shutterstock.com/image-vector/email-icon-envelope-mail-services-260nw-1379676980.jpg",
-                nameController.text);
-            RegisterUser();
+                    emailController.text,
+                    passwordController.text,
+                    "https://www.shutterstock.com/image-vector/email-icon-envelope-mail-services-260nw-1379676980.jpg",
+                    nameController.text,
+                    false)
+                .then((value) => RegisterUser());
           });
         },
         child: const Text('Register'));

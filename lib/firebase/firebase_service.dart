@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
-
+User? user = FirebaseAuth.instance.currentUser;
 Future<List> getUser() async {
   List user = [];
   CollectionReference collectionReferenceUser = db.collection('users');
@@ -15,10 +15,26 @@ Future<List> getUser() async {
   return user;
 }
 
-Future<void> addUsers(
-    String email, String password, String image, String name) async {
-  await db.collection("users").add(
-      {"email": email, "password": password, "image": image, "name": name});
+void updateEmailVerificationStatus(String userId) {
+  FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .update({'emailVerified': true}).then((value) {
+    print('El campo emailVerified se actualizó correctamente');
+  }).catchError((error) {
+    print('Error al actualizar el campo emailVerified: $error');
+  });
+}
+
+Future<void> addUsers(String email, String password, String image, String name,
+    bool emailVerified) async {
+  await db.collection("users").add({
+    "email": email,
+    "password": password,
+    "image": image,
+    "name": name,
+    "emailVerified": emailVerified
+  });
 }
 
 void verificarCampoContrasena(BuildContext context) async {
