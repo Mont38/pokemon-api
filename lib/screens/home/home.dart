@@ -185,9 +185,9 @@ class _Page1State extends State<Page1> {
   @override
   void initState() {
     super.initState();
-    
+    fetchFavorites();
+    fetchFavoritesAndPokemonData();
     _pokeDataModel = PokeController().getData();
-    
   }
 
   Future<void> fetchFavorites() async {
@@ -206,8 +206,7 @@ class _Page1State extends State<Page1> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
-    fetchFavorites();
-    fetchFavoritesAndPokemonData();
+
     return Column(
       children: [
         Expanded(
@@ -495,7 +494,6 @@ class _Page3State extends State<Page3> {
                                     ),
                                     child: Stack(
                                       children: [
-                                        
                                         /*
                                         Positioned(
                                           bottom: -10,

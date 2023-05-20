@@ -15,26 +15,44 @@ Future<List> getUser() async {
   return user;
 }
 
-void updateEmailVerificationStatus(String userId) {
-  FirebaseFirestore.instance
-      .collection('users')
-      .doc(userId)
-      .update({'emailVerified': true}).then((value) {
-    print('El campo emailVerified se actualizó correctamente');
+void updateEmailVerificationStatus(BuildContext context, String email) {
+  CollectionReference usersCollection =
+      FirebaseFirestore.instance.collection('users');
+
+  // Realiza una consulta para buscar el usuario con el correo electrónico especificado
+  usersCollection
+      .where('email', isEqualTo: email)
+      .get()
+      .then((QuerySnapshot querySnapshot) {
+    // Verifica si se encontró un usuario con el correo electrónico especificado
+    if (querySnapshot.size > 0) {
+      // Actualiza el campo 'emailVerified' a true para todos los usuarios encontrados
+      querySnapshot.docs.forEach((DocumentSnapshot doc) {
+        doc.reference.update({'emailVerified': true}).then((value) {
+          print(
+              'Campo emailVerified actualizado correctamente para el usuario con el correo electrónico: $email');
+          Navigator.pushNamed(context, '/Home');
+        }).catchError((error) {
+          print('Error al actualizar el campo emailVerified: $error');
+        });
+      });
+    } else {
+      print('No se encontró ningún usuario con el correo electrónico: $email');
+    }
   }).catchError((error) {
-    print('Error al actualizar el campo emailVerified: $error');
+    print('Error al realizar la consulta: $error');
   });
 }
 
-Future<void> addUsers(String email, String password, String image, String name,
-    bool emailVerified) async {
+Future<void> addUsers(BuildContext context, String email, String password,
+    String image, String name, bool emailVerified) async {
   await db.collection("users").add({
     "email": email,
     "password": password,
     "image": image,
     "name": name,
     "emailVerified": emailVerified
-  });
+  }).then((value) => Navigator.popAndPushNamed(context, '/verify'));
 }
 
 void verificarCampoContrasena(BuildContext context) async {

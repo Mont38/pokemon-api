@@ -38,10 +38,7 @@ class Verify_UserState extends State<Verify_User> {
 
       timer?.cancel();
 
-      Navigator.pushNamed(context, '/Home')
-          .then((value) => Timer(Duration(seconds: 1), () {
-                updateEmailVerificationStatus(user!.uid);
-              }));
+      updateEmailVerificationStatus(context, user!.email.toString());
     }
   }
 
