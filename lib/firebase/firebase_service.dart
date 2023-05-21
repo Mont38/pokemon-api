@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +45,22 @@ void updateEmailVerificationStatus(BuildContext context, String email) {
     print('Error al realizar la consulta: $error');
   });
 }
+Future<String> getUserImageUrlByEmail(String email) async {
+  final usersCollection = FirebaseFirestore.instance.collection('users');
+
+  final querySnapshot = await usersCollection.where('email', isEqualTo: email).get();
+
+  if (querySnapshot.docs.isNotEmpty) {
+    final userDoc = querySnapshot.docs.first;
+    // Aquí, accede al campo correspondiente que contiene la URL de la imagen del usuario
+    final imageUrl = userDoc.get('image');
+    return imageUrl;
+  }
+
+  // Si no se encuentra ningún usuario con el correo electrónico proporcionado, retorna una URL de imagen por defecto
+  return 'assets/images/pokeball.png';
+}
+
 
 Future<String> getUserImageByEmail(String email) async {
   final usersCollection = FirebaseFirestore.instance.collection('users');

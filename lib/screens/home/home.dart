@@ -14,6 +14,7 @@ import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import 'dart:convert';
 
@@ -422,6 +423,8 @@ class _Page2State extends State<Page2> {
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   File? _image;
+  File? selectedImage;
+  String imageUrl = '';
   late String _tempImagePath;
   final userPage2 = FirebaseAuth.instance.currentUser!;
 
@@ -431,6 +434,19 @@ class _Page2State extends State<Page2> {
     _loadImage();
     _usernameController.text = userPage2.displayName.toString();
     _emailController.text = userPage2.email.toString();
+
+    // Realiza una consulta a Firestore o Firebase Storage para obtener la URL de la imagen del usuario
+    getUserImageUrlByEmail(userPage2.email.toString()).then((url) {
+      setState(() {
+        imageUrl = url;
+      });
+    }).catchError((error) {
+      print('Error obteniendo la URL de la imagen del usuario: $error');
+      // Si ocurre un error al obtener la URL, asigna una URL de imagen por defecto
+      setState(() {
+        imageUrl = 'URL_DE_IMAGEN_POR_DEFECTO';
+      });
+    });
   }
 
   String getAuthProvider() {
@@ -457,27 +473,45 @@ class _Page2State extends State<Page2> {
   }
 
   Future<void> getImageFromGallery() async {
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    XFile? file = await picker.pickImage(source: ImageSource.gallery);
+    print('${file?.path}');
+    if (file == null) return;
+    String uniqueFileName = DateTime.now().microsecondsSinceEpoch.toString();
 
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      } else {
-        print('No image selected.');
-      }
-    });
+    Reference referenceRoot = FirebaseStorage.instance.ref();
+    Reference referenceDirImages = referenceRoot.child('images');
+    Reference referenceImageTopUpload =
+        referenceDirImages.child(uniqueFileName);
+
+    try {
+      await referenceImageTopUpload.putFile(File(file!.path));
+      imageUrl = await referenceImageTopUpload.getDownloadURL();
+
+      setState(() {
+        selectedImage = File(file.path);
+      });
+    } catch (error) {}
   }
 
   Future<void> getImageFromCamera() async {
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
+    XFile? file = await picker.pickImage(source: ImageSource.camera);
+    print('${file?.path}');
+    if (file == null) return;
+    String uniqueFileName = DateTime.now().microsecondsSinceEpoch.toString();
 
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      } else {
-        print('No image selected.');
-      }
-    });
+    Reference referenceRoot = FirebaseStorage.instance.ref();
+    Reference referenceDirImages = referenceRoot.child('images');
+    Reference referenceImageTopUpload =
+        referenceDirImages.child(uniqueFileName);
+
+    try {
+      await referenceImageTopUpload.putFile(File(file!.path));
+      imageUrl = await referenceImageTopUpload.getDownloadURL();
+
+      setState(() {
+        selectedImage = File(file.path);
+      });
+    } catch (error) {}
   }
 
   @override
@@ -498,7 +532,7 @@ class _Page2State extends State<Page2> {
                           ListTile(
                             leading: Icon(Icons.photo_library),
                             title: Text('Select from Gallery'),
-                            onTap: () {
+                            onTap: () async {
                               getImageFromGallery();
                               Navigator.pop(context);
                             },
@@ -506,7 +540,7 @@ class _Page2State extends State<Page2> {
                           ListTile(
                             leading: Icon(Icons.camera_alt),
                             title: Text('Take a Photo'),
-                            onTap: () {
+                            onTap: () async {
                               getImageFromCamera();
                               Navigator.pop(context);
                             },
@@ -518,14 +552,19 @@ class _Page2State extends State<Page2> {
                 );
               },
               child: CircleAvatar(
-                backgroundImage: _image != null ? FileImage(_image!) : null,
+                backgroundImage: imageUrl != ''
+                    ? NetworkImage(imageUrl) as ImageProvider<Object>?
+                    : (_image != null)
+                        ? FileImage(_image!) as ImageProvider<Object>?
+                        : null,
                 radius: 60,
-                child: _image == null
-                    ? Icon(
-                        Icons.person,
-                        size: 60,
-                      )
-                    : null,
+                child:
+                    (selectedImage == null && _image == null && imageUrl == '')
+                        ? Icon(
+                            Icons.person,
+                            size: 60,
+                          )
+                        : null,
               ),
             ),
             SizedBox(height: 20),
@@ -561,7 +600,7 @@ class _Page2State extends State<Page2> {
                 String email = _emailController.text;
                 String userId = userPage2.uid
                     .toString(); // Obtén el ID del usuario actual desde FirebaseAuth
-                updateUserInfo(email, name, _image.toString()).then((_) {
+                updateUserInfo(email, name, imageUrl).then((_) {
                   // Actualización exitosa
                   // Puedes mostrar un mensaje de éxito o realizar cualquier otra acción necesaria
                   showDialog(
