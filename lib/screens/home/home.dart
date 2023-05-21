@@ -407,13 +407,15 @@ class _Page2State extends State<Page2> {
     _emailController.text = userPage2.email.toString();
   }
 
-  getAuthenticatedProviders() {
-    User? user = FirebaseAuth.instance.currentUser;
+  String getAuthProvider() {
+    final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      List<String> providers =
-          user.providerData.map((userInfo) => userInfo.providerId).toList();
-      return providers;
+      final providers = user.providerData;
+      final providerNames =
+          providers.map((userInfo) => userInfo.providerId).join(", ");
+      return providerNames;
     }
+    return "Sin autenticar";
   }
 
   Future<void> _loadImage() async {
@@ -503,8 +505,7 @@ class _Page2State extends State<Page2> {
             SizedBox(height: 20),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Text('Currently authenticated with: ' +
-                  getAuthenticatedProviders().toString()),
+              child: Text('Currently authenticated with: ' + getAuthProvider()),
             ),
             SizedBox(height: 20),
             Padding(
@@ -530,10 +531,51 @@ class _Page2State extends State<Page2> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Save profile information
-                String username = _usernameController.text;
+                String name = _usernameController.text;
                 String email = _emailController.text;
-                // Do something with the data...
+                String userId = userPage2.uid
+                    .toString(); // Obtén el ID del usuario actual desde FirebaseAuth
+                updateUserInfo(email, name, _image.toString()).then((_) {
+                  // Actualización exitosa
+                  // Puedes mostrar un mensaje de éxito o realizar cualquier otra acción necesaria
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Update Successful'),
+                        content: Text('User information updated.'),
+                        actions: [
+                          TextButton(
+                            child: Text('OK'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }).catchError((error) {
+                  // Manejo del error en caso de fallo en la actualización
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Update Failed'),
+                        content: Text(
+                            'An error occurred while updating user information.'),
+                        actions: [
+                          TextButton(
+                            child: Text('OK'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                });
               },
               child: Text('Save'),
             ),
