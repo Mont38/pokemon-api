@@ -20,6 +20,8 @@ import 'dart:convert';
 import 'dart:core';
 
 import 'package:pokemon/screens/home/pokemon_detail_screen.dart';
+import 'package:pokemon/settings/theme_settings.dart';
+import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   Home({super.key});
@@ -38,10 +40,11 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    ThemeProvider tema = Provider.of<ThemeProvider>(context);
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(31, 231, 231, 231),
+        backgroundColor: const Color.fromARGB(31, 231, 231, 231),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       drawer: BackdropFilter(
@@ -50,9 +53,7 @@ class _HomeState extends State<Home> {
           borderRadius: BorderRadius.circular(50),
           child: Drawer(
             child: Container(
-              decoration: BoxDecoration(
-                color: const Color.fromRGBO(29, 31, 40, 1),
-              ),
+              decoration: const BoxDecoration(),
               child: ListView(
                 children: [
                   UserAccountsDrawerHeader(
@@ -61,57 +62,82 @@ class _HomeState extends State<Home> {
                       ),
                       accountName: Text('${user.displayName}'),
                       accountEmail: Text('${user.email}')),
-                  TextButton(
-                    style: TextButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
-                        side: BorderSide(
-                          color: Color.fromRGBO(255, 178, 122, 1),
+                  Column(
+                    children: [
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
+                            side: const BorderSide(
+                              color: Color.fromRGBO(255, 178, 122, 1),
+                            ),
+                          ),
+                          primary: Colors.white,
+                          backgroundColor:
+                              const Color.fromRGBO(88, 89, 90, 0.239),
                         ),
+                        onPressed: () {
+                          tema.cambiarTemaOscuro();
+                        },
+                        child: const Icon(Icons.nightlight,
+                            color: Color.fromRGBO(32, 83, 134, 1)),
                       ),
-                      primary: Colors.white,
-                      backgroundColor: Color.fromRGBO(88, 89, 90, 0.239),
-                    ),
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/profile');
-                    },
-                    child: Icon(Icons.settings,
-                        color: Color.fromRGBO(255, 178, 122, 1)),
-                  ),
-                  TextButton(
-                    style: TextButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
-                        side: BorderSide(
-                          color: Color.fromRGBO(255, 178, 122, 1),
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
+                            side: const BorderSide(
+                              color: Color.fromRGBO(255, 178, 122, 1),
+                            ),
+                          ),
+                          primary: Colors.white,
+                          backgroundColor:
+                              const Color.fromRGBO(88, 89, 90, 0.239),
                         ),
+                        onPressed: () {
+                          tema.cambiarTemaClaro();
+                        },
+                        child: const Icon(Icons.sunny,
+                            color: Color.fromRGBO(255, 178, 122, 1)),
                       ),
-                      primary: Colors.white,
-                      backgroundColor: Color.fromRGBO(88, 89, 90, 0.239),
-                    ),
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/Notifications');
-                    },
-                    child: Icon(Icons.notifications,
-                        color: Color.fromRGBO(255, 178, 122, 1)),
-                  ),
-                  TextButton(
-                    style: TextButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
-                        side: BorderSide(
-                          color: Color.fromRGBO(255, 178, 122, 1),
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
+                            side: const BorderSide(
+                              color: Color.fromRGBO(255, 178, 122, 1),
+                            ),
+                          ),
+                          primary: Colors.white,
+                          backgroundColor:
+                              const Color.fromRGBO(88, 89, 90, 0.239),
                         ),
+                        onPressed: () {
+                          tema.cambiarTemaPersonalizado();
+                        },
+                        child: const Icon(Icons.auto_awesome,
+                            color: Color.fromRGBO(196, 111, 235, 1)),
                       ),
-                      primary: Colors.white,
-                      backgroundColor: Color.fromRGBO(88, 89, 90, 0.239),
-                    ),
-                    onPressed: () {
-                      FirebaseAuth.instance.signOut().then(
-                          (value) => Navigator.pushNamed(context, '/Login'));
-                    },
-                    child: Icon(Icons.exit_to_app,
-                        color: Color.fromRGBO(255, 178, 122, 1)),
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
+                            side: const BorderSide(
+                              color: Color.fromRGBO(255, 178, 122, 1),
+                            ),
+                          ),
+                          primary: Colors.white,
+                          backgroundColor:
+                              const Color.fromRGBO(88, 89, 90, 0.239),
+                        ),
+                        onPressed: () {
+                          FirebaseAuth.instance.signOut().then((value) =>
+                              Navigator.pushNamed(context, '/Login'));
+                        },
+                        child: const Icon(Icons.exit_to_app,
+                            color: Color.fromRGBO(255, 178, 122, 1)),
+                      ),
+                    ],
                   ),
                 ],
               ),

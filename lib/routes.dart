@@ -22,6 +22,6 @@ class Routes {
     ForgotPass.routeName: (context) => ForgotPass(),
     Password_Google.routeName: (context) => Password_Google(),
     Verify_User.routeName: (context) => Verify_User(),
-    Notifications.routeName: (context) => Notifications()
+    Notifications.routeName: (context) => Notifications(),
   };
 }
