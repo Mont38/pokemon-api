@@ -44,6 +44,27 @@ void updateEmailVerificationStatus(BuildContext context, String email) {
   });
 }
 
+Future<String> getUserImageByEmail(String email) async {
+  final usersCollection = FirebaseFirestore.instance.collection('users');
+
+  final querySnapshot = await usersCollection
+      .where('email', isEqualTo: email)
+      .get();
+
+  if (querySnapshot.size > 0) {
+    // Se encontró un usuario con el correo electrónico especificado
+    final userDocument = querySnapshot.docs.first;
+    final userData = userDocument.data();
+    final image = userData['image'];
+    return image;
+  } else {
+    // No se encontró ningún usuario con el correo electrónico especificado
+    throw Exception(
+        'No se encontró ningún usuario con el correo electrónico: $email');
+  }
+}
+
+
 Future<void> addUsers(BuildContext context, String email, String password,
     String image, String name, bool emailVerified) async {
   await db.collection("users").add({
@@ -53,6 +74,30 @@ Future<void> addUsers(BuildContext context, String email, String password,
     "name": name,
     "emailVerified": emailVerified
   }).then((value) => Navigator.popAndPushNamed(context, '/verify'));
+}
+
+Future<void> updateUserInfo(String email, String name, String image) async {
+  CollectionReference usersCollection =
+      FirebaseFirestore.instance.collection('users');
+
+  // Realiza una consulta para buscar el usuario con el correo electrónico especificado
+  QuerySnapshot querySnapshot =
+      await usersCollection.where('email', isEqualTo: email).get();
+
+  // Verifica si se encontró un usuario con el correo electrónico especificado
+  if (querySnapshot.size > 0) {
+    // Obtiene la referencia del documento del usuario encontrado
+    DocumentReference userDocRef = querySnapshot.docs.first.reference;
+
+    // Actualiza los campos 'username' e 'image' del usuario
+    await userDocRef.update({
+      'name': name,
+      'image': image,
+    });
+  } else {
+    throw Exception(
+        'No se encontró ningún usuario con el correo electrónico: $email');
+  }
 }
 
 void verificarCampoContrasena(BuildContext context) async {
