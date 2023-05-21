@@ -17,6 +17,9 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  String? fcmToken = await FirebaseMessaging.instance.getToken();
+  print(fcmToken);
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   runApp(const MyApp());
 }
@@ -33,7 +36,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     final pushNotification = new PushNotification();
-    pushNotification.initNotification();
+    // pushNotification.initNotification();
   }
 
   // This widget is the root of your application.

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -10,6 +11,9 @@ import 'package:pokemon/model/poke_model.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'dart:convert';
 
@@ -29,7 +33,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final auth = FirebaseAuth.instance;
   int _currentIndex = 0;
-  final screens = [const Page1(), const Page3(), const Page2()];
+  final screens = [const Page1(), const Page3(), Page2()];
   final user = FirebaseAuth.instance.currentUser!;
 
   @override
@@ -382,13 +386,161 @@ class _Page1State extends State<Page1> {
   }
 }
 
-class Page2 extends StatelessWidget {
-  const Page2({Key? key}) : super(key: key);
+class Page2 extends StatefulWidget {
+  @override
+  _Page2State createState() => _Page2State();
+}
+
+class _Page2State extends State<Page2> {
+  final picker = ImagePicker();
+  TextEditingController _usernameController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  File? _image;
+  late String _tempImagePath;
+  final userPage2 = FirebaseAuth.instance.currentUser!;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadImage();
+    _usernameController.text = userPage2.displayName.toString();
+    _emailController.text = userPage2.email.toString();
+  }
+
+  getAuthenticatedProviders() {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      List<String> providers =
+          user.providerData.map((userInfo) => userInfo.providerId).toList();
+      return providers;
+    }
+  }
+
+  Future<void> _loadImage() async {
+    final ByteData imageData =
+        await rootBundle.load('assets/images/pokeball.png');
+    final tempDir = await getTemporaryDirectory();
+    _tempImagePath = '${tempDir.path}/pokeball.png';
+    final imageFile = File(_tempImagePath);
+    await imageFile.writeAsBytes(imageData.buffer.asUint8List());
+    setState(() {
+      _image = imageFile;
+    });
+  }
+
+  Future<void> getImageFromGallery() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  Future<void> getImageFromCamera() async {
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        color: Colors.green, child: const Center(child: Text('Page 2')));
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Container(
+                      child: Wrap(
+                        children: [
+                          ListTile(
+                            leading: Icon(Icons.photo_library),
+                            title: Text('Select from Gallery'),
+                            onTap: () {
+                              getImageFromGallery();
+                              Navigator.pop(context);
+                            },
+                          ),
+                          ListTile(
+                            leading: Icon(Icons.camera_alt),
+                            title: Text('Take a Photo'),
+                            onTap: () {
+                              getImageFromCamera();
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+              child: CircleAvatar(
+                backgroundImage: _image != null ? FileImage(_image!) : null,
+                radius: 60,
+                child: _image == null
+                    ? Icon(
+                        Icons.person,
+                        size: 60,
+                      )
+                    : null,
+              ),
+            ),
+            SizedBox(height: 20),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Text('Currently authenticated with: ' +
+                  getAuthenticatedProviders().toString()),
+            ),
+            SizedBox(height: 20),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: TextField(
+                controller: _usernameController,
+                decoration: InputDecoration(
+                  labelText: 'Username',
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: TextField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                ),
+                enabled: false,
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Save profile information
+                String username = _usernameController.text;
+                String email = _emailController.text;
+                // Do something with the data...
+              },
+              child: Text('Save'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -509,7 +661,6 @@ class _Page3State extends State<Page3> {
                                     ),
                                     child: Stack(
                                       children: [
-
                                         Positioned(
                                           bottom: -10,
                                           right: -10,
