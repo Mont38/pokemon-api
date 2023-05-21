@@ -30,9 +30,22 @@ class _RegisterScreenState extends State<Register> {
   final auth = FirebaseAuth.instance;
 
   void RegisterUser() async {
-    await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text, password: passwordController.text);
-    Navigator.pushNamed(context, AuthPage.routeName);
+    try {
+      await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+              email: emailController.text, password: passwordController.text)
+          .then((value) => addUsers(
+              context,
+              emailController.text,
+              passwordController.text,
+              "https://www.shutterstock.com/image-vector/email-icon-envelope-mail-services-260nw-1379676980.jpg",
+              nameController.text,
+              false));
+      //  Navigator.popAndPushNamed(context, '/verify');
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.message.toString())));
+    }
   }
 
   bool isLoading = false;
@@ -187,11 +200,6 @@ class _RegisterScreenState extends State<Register> {
           Future.delayed(Duration(milliseconds: 3000)).then((value) {
             isLoading = false;
             setState(() {});
-            addUsers(
-                emailController.text,
-                passwordController.text,
-                "https://www.shutterstock.com/image-vector/email-icon-envelope-mail-services-260nw-1379676980.jpg",
-                nameController.text);
             RegisterUser();
           });
         },

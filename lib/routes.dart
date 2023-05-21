@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:pokemon/firebase/auth_user/auth_page.dart';
+import 'package:pokemon/firebase/auth_user/verify_user.dart';
 import 'package:pokemon/screens/Home/home.dart';
 import 'package:pokemon/screens/Login/login.dart';
 import 'package:pokemon/screens/Login/password_Google.dart';
@@ -19,4 +20,5 @@ final Map<String, WidgetBuilder> routes = {
   Register.routeName: (context) => Register(),
   ForgotPass.routeName: (context) => ForgotPass(),
   Password_Google.routeName: (context) => Password_Google(),
+  Verify_User.routeName: (context) => Verify_User(),
 };

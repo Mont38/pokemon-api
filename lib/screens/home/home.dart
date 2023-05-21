@@ -498,6 +498,7 @@ class _Page3State extends State<Page3> {
                                     ),
                                     child: Stack(
                                       children: [
+
                                         Positioned(
                                           bottom: -10,
                                           right: -10,
