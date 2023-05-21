@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:pokemon/firebase/auth_user/auth_page.dart';
 import 'package:pokemon/screens/onboarding/PreviewPages.dart';
-import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'routes.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -18,7 +17,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  final fcmToken = await FirebaseMessaging.instance.getToken();
+  String? fcmToken = await FirebaseMessaging.instance.getToken();
   print(fcmToken);
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
