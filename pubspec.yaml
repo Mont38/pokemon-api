@@ -55,6 +55,11 @@ dependencies:
   dio: ^4.0.0
   dio_http_cache: ^0.3.0
   fluttertoast: ^8.2.1
+  firebase_messaging: ^14.6.1
+  provider:
+  
+  flutter_local_notifications: ^14.1.0
+
   
 
 

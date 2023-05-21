@@ -85,7 +85,9 @@ class _HomeState extends State<Home> {
                       primary: Colors.white,
                       backgroundColor: Color.fromRGBO(88, 89, 90, 0.239),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/Notifications');
+                    },
                     child: Icon(Icons.notifications,
                         color: Color.fromRGBO(255, 178, 122, 1)),
                   ),
@@ -125,12 +127,12 @@ class _HomeState extends State<Home> {
             bottomLeft: Radius.circular(20),
             bottomRight: Radius.circular(20),
           ),
-          color: Color.fromRGBO(249, 249, 249, 0.169),
+          color: Color.fromRGBO(18, 18, 18, 1),
           boxShadow: [
             BoxShadow(
-              color: Color.fromARGB(169, 158, 158, 158).withOpacity(0.5),
-              spreadRadius: 1,
-              blurRadius: 2,
+              color: Color.fromARGB(169, 200, 197, 197).withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 3,
               offset: Offset(0, 1),
             ),
           ],
@@ -207,97 +209,106 @@ class _Page1State extends State<Page1> {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
 
-    return Column(
-      children: [
-        Expanded(
-          child: ListView.builder(
-            itemCount: pokedexthis.length,
-            itemBuilder: (context, index) {
-              final pokemon = pokedexthis[index];
-              final id = pokemon['id'];
-              final name = pokemon['name'];
-              final type = pokemon['type'][0];
+    return Container(
+      decoration: BoxDecoration(
+          image: DecorationImage(
+        image: AssetImage("assets/images/background_home.jpg"),
+        fit: BoxFit.cover,
+      )),
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: pokedexthis.length,
+              itemBuilder: (context, index) {
+                final pokemon = pokedexthis[index];
+                final id = pokemon['id'];
+                final name = pokemon['name'];
+                final type = pokemon['type'][0];
 
-              Color backgroundColor = Colors.white;
+                Color backgroundColor = Colors.white;
 
-              if (type == 'Grass') {
-                backgroundColor = Colors.greenAccent;
-              } else if (type == 'Fire') {
-                backgroundColor = Colors.redAccent;
-              } else if (type == 'Water') {
-                backgroundColor = Colors.blue;
-              } else if (type == 'Electric') {
-                backgroundColor = Colors.yellow;
-              } else if (type == 'Rock') {
-                backgroundColor = Colors.grey;
-              } else if (type == 'Ground') {
-                backgroundColor = Colors.brown;
-              } else if (type == 'Psychic') {
-                backgroundColor = Colors.indigo;
-              } else if (type == 'Fighting') {
-                backgroundColor = Colors.orange;
-              } else if (type == 'Bug') {
-                backgroundColor = Colors.lightGreenAccent;
-              } else if (type == 'Ghost') {
-                backgroundColor = Colors.deepPurple;
-              } else if (type == 'Poison') {
-                backgroundColor = Colors.deepPurpleAccent;
-              } else if (type == 'Normal') {
-                backgroundColor = Colors.black26;
-              } else {
-                backgroundColor = Colors.pink;
-              }
+                if (type == 'Grass') {
+                  backgroundColor = Colors.greenAccent;
+                } else if (type == 'Fire') {
+                  backgroundColor = Colors.redAccent;
+                } else if (type == 'Water') {
+                  backgroundColor = Colors.blue;
+                } else if (type == 'Electric') {
+                  backgroundColor = Colors.yellow;
+                } else if (type == 'Rock') {
+                  backgroundColor = Colors.grey;
+                } else if (type == 'Ground') {
+                  backgroundColor = Colors.brown;
+                } else if (type == 'Psychic') {
+                  backgroundColor = Colors.indigo;
+                } else if (type == 'Fighting') {
+                  backgroundColor = Colors.orange;
+                } else if (type == 'Bug') {
+                  backgroundColor = Colors.lightGreenAccent;
+                } else if (type == 'Ghost') {
+                  backgroundColor = Colors.deepPurple;
+                } else if (type == 'Poison') {
+                  backgroundColor = Colors.deepPurpleAccent;
+                } else if (type == 'Normal') {
+                  backgroundColor = Colors.black26;
+                } else {
+                  backgroundColor = Colors.pink;
+                }
 
-              return Card(
-                color: backgroundColor,
-                child: ListTile(
-                  leading: Text('No. ' + id.toString()),
-                  title: Text(name),
-                  subtitle: Text(type),
-                  onTap: () {
-                    //detail screen
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => PokemonDetailScreen(
-                                pokemonDetail: pokedexthis[index],
-                                color: type == 'Grass'
-                                    ? Colors.greenAccent
-                                    : type == "Fire"
-                                        ? Colors.redAccent
-                                        : type == "Water"
-                                            ? Colors.blue
-                                            : type == "Electric"
-                                                ? Colors.yellow
-                                                : type == "Rock"
-                                                    ? Colors.grey
-                                                    : type == "Ground"
-                                                        ? Colors.brown
-                                                        : type == "Psychic"
-                                                            ? Colors.indigo
-                                                            : type == "Fighting"
-                                                                ? Colors.orange
-                                                                : type == "Bug"
-                                                                    ? Colors
-                                                                        .lightGreenAccent
-                                                                    : type ==
-                                                                            "Ghost"
-                                                                        ? Colors
-                                                                            .deepPurple
-                                                                        : type ==
-                                                                                "Poison"
-                                                                            ? Colors.deepPurpleAccent
-                                                                            : type == "Normal"
-                                                                                ? Colors.black26
-                                                                                : Colors.pink,
-                                heroTag: index)));
-                  },
-                ),
-              );
-            },
+                return Card(
+                  color: backgroundColor,
+                  child: ListTile(
+                    leading: Text('No. ' + id.toString()),
+                    title: Text(name),
+                    subtitle: Text(type),
+                    onTap: () {
+                      //detail screen
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => PokemonDetailScreen(
+                                  pokemonDetail: pokedexthis[index],
+                                  color: type == 'Grass'
+                                      ? Colors.greenAccent
+                                      : type == "Fire"
+                                          ? Colors.redAccent
+                                          : type == "Water"
+                                              ? Colors.blue
+                                              : type == "Electric"
+                                                  ? Colors.yellow
+                                                  : type == "Rock"
+                                                      ? Colors.grey
+                                                      : type == "Ground"
+                                                          ? Colors.brown
+                                                          : type == "Psychic"
+                                                              ? Colors.indigo
+                                                              : type ==
+                                                                      "Fighting"
+                                                                  ? Colors
+                                                                      .orange
+                                                                  : type ==
+                                                                          "Bug"
+                                                                      ? Colors
+                                                                          .lightGreenAccent
+                                                                      : type ==
+                                                                              "Ghost"
+                                                                          ? Colors
+                                                                              .deepPurple
+                                                                          : type == "Poison"
+                                                                              ? Colors.deepPurpleAccent
+                                                                              : type == "Normal"
+                                                                                  ? Colors.black26
+                                                                                  : Colors.pink,
+                                  heroTag: index)));
+                    },
+                  ),
+                );
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
