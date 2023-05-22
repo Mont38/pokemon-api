@@ -50,7 +50,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
             right: 5,
             child: IconButton(
                 icon: Icon(Icons.favorite),
-                color: Colors.white,
+                color: Color.fromARGB(255, 255, 171, 220),
                 iconSize: 30,
                 onPressed: () async {
                   final pokemonId = widget.pokemonDetail['id'].toString();
@@ -72,6 +72,41 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                     );
                   }
                 }),
+          ),
+          Positioned(
+            top: 40,
+            right: 50,
+            child: IconButton(
+              icon: Icon(
+                Icons.delete,
+                color: Colors.red,
+              ),
+              onPressed: () async {
+                final pokemonId = widget.pokemonDetail['id'].toString();
+                final userId = actualUser.uid;
+
+                // Verificar si el pokemon existe en los favoritos antes de eliminarlo
+                bool isFavorite =
+                    await _firebase.checkIfPokemonIsFavorite(userId, pokemonId);
+
+                if (isFavorite) {
+                  // Eliminar el pokemon de los favoritos
+                  await _firebase.removeFavorite(userId, pokemonId);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Eliminado de favoritos...'),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('El pokemon no está en tus favoritos.'),
+                    ),
+                  );
+                }
+              },
+            ),
           ),
           Positioned(
               top: 90,
@@ -368,54 +403,6 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                                         fontWeight: FontWeight.bold),
                                   )
                           ],
-                        ),
-                      ),
-                      Positioned(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: width * 0.3,
-                                child: IconButton(
-                                  icon: Icon(Icons.delete),
-                                  onPressed: () async {
-                                    final pokemonId =
-                                        widget.pokemonDetail['id'].toString();
-                                    final userId = actualUser.uid;
-
-                                    // Verificar si el pokemon existe en los favoritos antes de eliminarlo
-                                    bool isFavorite = await _firebase
-                                        .checkIfPokemonIsFavorite(
-                                            userId, pokemonId);
-
-                                    if (isFavorite) {
-                                      // Eliminar el pokemon de los favoritos
-                                      await _firebase.removeFavorite(
-                                          userId, pokemonId);
-
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content:
-                                              Text('Eliminado de favoritos...'),
-                                        ),
-                                      );
-                                    } else {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                              'El pokemon no está en tus favoritos.'),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
                         ),
                       ),
                     ],

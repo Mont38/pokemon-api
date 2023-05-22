@@ -58,6 +58,17 @@ class Firebase_service {
     });
   }
 
+  Future<void> addUsers(BuildContext context, String email, String password,
+      String image, String name, bool emailVerified) async {
+    await db.collection("users").add({
+      "email": email,
+      "password": password,
+      "image": image,
+      "name": name,
+      "emailVerified": emailVerified
+    }).then((value) => Navigator.popAndPushNamed(context, '/verify'));
+  }
+
   Future<String> getUserImageByEmail(String email) async {
     final usersCollection = FirebaseFirestore.instance.collection('users');
 
@@ -75,17 +86,6 @@ class Firebase_service {
       throw Exception(
           'No se encontró ningún usuario con el correo electrónico: $email');
     }
-  }
-
-  Future<void> addUsers(BuildContext context, String email, String password,
-      String image, String name, bool emailVerified) async {
-    await db.collection("users").add({
-      "email": email,
-      "password": password,
-      "image": image,
-      "name": name,
-      "emailVerified": emailVerified
-    }).then((value) => Navigator.popAndPushNamed(context, '/verify'));
   }
 
   Future<void> updateUserInfo(String email, String name, String image) async {
@@ -110,47 +110,23 @@ class Firebase_service {
       throw Exception(
           'No se encontró ningún usuario con el correo electrónico: $email');
     }
-<<<<<<< HEAD
-=======
-  }).catchError((error) {
-    print('Error al realizar la consulta: $error');
-  });
-}
-Future<String> getUserImageUrlByEmail(String email) async {
-  final usersCollection = FirebaseFirestore.instance.collection('users');
-
-  final querySnapshot = await usersCollection.where('email', isEqualTo: email).get();
-
-  if (querySnapshot.docs.isNotEmpty) {
-    final userDoc = querySnapshot.docs.first;
-    // Aquí, accede al campo correspondiente que contiene la URL de la imagen del usuario
-    final imageUrl = userDoc.get('image');
-    return imageUrl;
   }
 
-  // Si no se encuentra ningún usuario con el correo electrónico proporcionado, retorna una URL de imagen por defecto
-  return 'assets/images/pokeball.png';
-}
+  Future<String> getUserImageUrlByEmail(String email) async {
+    final usersCollection = FirebaseFirestore.instance.collection('users');
 
+    final querySnapshot =
+        await usersCollection.where('email', isEqualTo: email).get();
 
-Future<String> getUserImageByEmail(String email) async {
-  final usersCollection = FirebaseFirestore.instance.collection('users');
+    if (querySnapshot.docs.isNotEmpty) {
+      final userDoc = querySnapshot.docs.first;
+      // Aquí, accede al campo correspondiente que contiene la URL de la imagen del usuario
+      final imageUrl = userDoc.get('image');
+      return imageUrl;
+    }
 
-  final querySnapshot = await usersCollection
-      .where('email', isEqualTo: email)
-      .get();
-
-  if (querySnapshot.size > 0) {
-    // Se encontró un usuario con el correo electrónico especificado
-    final userDocument = querySnapshot.docs.first;
-    final userData = userDocument.data();
-    final image = userData['image'];
-    return image;
-  } else {
-    // No se encontró ningún usuario con el correo electrónico especificado
-    throw Exception(
-        'No se encontró ningún usuario con el correo electrónico: $email');
->>>>>>> 1fed679c9985e4a27d3050979c8273e7d012c208
+    // Si no se encuentra ningún usuario con el correo electrónico proporcionado, retorna una URL de imagen por defecto
+    return 'assets/images/pokeball.png';
   }
 
   void verificarCampoContrasena(BuildContext context) async {

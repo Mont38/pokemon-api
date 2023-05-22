@@ -15,11 +15,7 @@ import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-<<<<<<< HEAD
-import 'package:pokemon/model/user_model.dart';
-=======
 import 'package:firebase_storage/firebase_storage.dart';
->>>>>>> 1fed679c9985e4a27d3050979c8273e7d012c208
 
 import 'dart:convert';
 
@@ -65,40 +61,26 @@ class _HomeState extends State<Home> {
           borderRadius: BorderRadius.circular(50),
           child: Drawer(
             child: Container(
-                decoration: const BoxDecoration(),
-                child: StreamBuilder(
+              decoration: const BoxDecoration(),
+              child: StreamBuilder(
                   stream: _firebase.getAllFavorites(user.email),
                   builder: (BuildContext context, snapshot) {
                     if (snapshot.hasData) {
-                      final Set<String> processedUsers = Set<
-                          String>(); // Set para almacenar usuarios procesados
                       return ListView.builder(
                         itemCount: snapshot.data!.docs.length,
                         itemBuilder: (BuildContext context, int index) {
-                          final userName =
-                              snapshot.data!.docs[index].get('name') ??
-                                  snapshot.data!.docs[index].get('email');
-
-                          // Verificar si el usuario ya fue procesado y omitirlo si es el caso
-                          if (processedUsers.contains(userName)) {
-                            return Container(); // Omitir la construcción del elemento si el usuario ya fue procesado
-                          }
-                          processedUsers.add(
-                              userName); // Agregar el usuario al conjunto de usuarios procesados
-
-                          print(userName);
+                          print(snapshot.data!.docs[index].get('name'));
 
                           return Column(
                             children: [
                               UserAccountsDrawerHeader(
                                 currentAccountPicture: CircleAvatar(
-                                  backgroundImage:
-                                      NetworkImage(user.photoURL.toString()),
+                                  backgroundImage: NetworkImage(
+                                      '${snapshot.data!.docs[index].get('image') ?? user!.photoURL}${snapshot.data!.docs[index].get('image') != null ? '' : ''}'),
                                 ),
                                 accountName: Text(
                                     '${snapshot.data!.docs[index].get('name') ?? snapshot.data!.docs[index].get('email')}${snapshot.data!.docs[index].get('name') != null ? '' : ''}'),
-                                accountEmail: Text(
-                                    '${snapshot.data!.docs[index].get('email')}'),
+                                accountEmail: Text('${user.email}'),
                               ),
                               TextButton(
                                 style: TextButton.styleFrom(
@@ -186,8 +168,8 @@ class _HomeState extends State<Home> {
                     } else {
                       return const Center(child: CircularProgressIndicator());
                     }
-                  },
-                )),
+                  }),
+            ),
           ),
         ),
       ),
@@ -480,11 +462,11 @@ class _Page2State extends State<Page2> {
   void initState() {
     super.initState();
     _loadImage();
-    _usernameController.text = userPage2.displayName.toString();
-    _emailController.text = userPage2.email.toString();
+    _usernameController.text =
+        _emailController.text = userPage2.email.toString();
 
     // Realiza una consulta a Firestore o Firebase Storage para obtener la URL de la imagen del usuario
-    getUserImageUrlByEmail(userPage2.email.toString()).then((url) {
+    _firebase.getUserImageUrlByEmail(userPage2.email.toString()).then((url) {
       setState(() {
         imageUrl = url;
       });
@@ -648,13 +630,7 @@ class _Page2State extends State<Page2> {
                 String email = _emailController.text;
                 String userId = userPage2.uid
                     .toString(); // Obtén el ID del usuario actual desde FirebaseAuth
-<<<<<<< HEAD
-                _firebase
-                    .updateUserInfo(email, name, _image.toString())
-                    .then((_) {
-=======
-                updateUserInfo(email, name, imageUrl).then((_) {
->>>>>>> 1fed679c9985e4a27d3050979c8273e7d012c208
+                _firebase.updateUserInfo(email, name, imageUrl).then((_) {
                   // Actualización exitosa
                   // Puedes mostrar un mensaje de éxito o realizar cualquier otra acción necesaria
                   showDialog(
