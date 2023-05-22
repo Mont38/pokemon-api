@@ -314,7 +314,7 @@ class _Page1State extends State<Page1> {
                 } else if (type == 'Poison') {
                   backgroundColor = Colors.deepPurpleAccent;
                 } else if (type == 'Normal') {
-                  backgroundColor = Color.fromARGB(66, 0, 0, 0);
+                  backgroundColor = Color.fromARGB(255, 251, 207, 168);
                 } else {
                   backgroundColor = Colors.pink;
                 }
@@ -361,7 +361,7 @@ class _Page1State extends State<Page1> {
                                                                           : type == "Poison"
                                                                               ? Colors.deepPurpleAccent
                                                                               : type == "Normal"
-                                                                                  ? Colors.black26
+                                                                                  ? Color.fromARGB(255, 251, 207, 168)
                                                                                   : Colors.pink,
                                   heroTag: index)));
                     },
@@ -791,7 +791,7 @@ class _Page3State extends State<Page3> {
                                                                               : type == "Poison"
                                                                                   ? Colors.deepPurpleAccent
                                                                                   : type == "Normal"
-                                                                                      ? Colors.black26
+                                                                                      ? Color.fromARGB(255, 251, 207, 168)
                                                                                       : Colors.pink,
                                       borderRadius:
                                           BorderRadius.all(Radius.circular(20)),
@@ -900,7 +900,7 @@ class _Page3State extends State<Page3> {
                                                                                       : type == "Poison"
                                                                                           ? Colors.deepPurpleAccent
                                                                                           : type == "Normal"
-                                                                                              ? Colors.black26
+                                                                                              ? Color.fromARGB(255, 251, 207, 168)
                                                                                               : Colors.pink,
                                               heroTag: index)));
                                 },
