@@ -24,15 +24,16 @@ class _BodyState extends State<Body> {
       "image": "assets/images/preview.png"
     },
     {
-      "title": "Content",
-      "text": "in this app you can see all pokemon and add them to favorites",
-      "image": "assets/a1.jpg"
+      "title": "Preview Pokemon",
+      "text": "",
+      "image": "assets/images/pokemones.jfif"
     },
     {
-      "title": "App",
-      "text": "We show the easy way to shop. \nJust stay at home with us",
-      "image": "assets/a1.jpg"
+      "title": "Your Pokemons",
+      "text": "",
+      "image": "assets/images/favoritos.jfif"
     },
+    {"title": "Perfil", "text": "", "image": "assets/images/perfil.jfif"},
   ];
   @override
   Widget build(BuildContext context) {
