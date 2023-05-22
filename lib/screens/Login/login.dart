@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pokemon/firebase/auth_user/auth_git.dart';
 import 'package:pokemon/firebase/auth_user/auth_google.dart';
 import 'package:pokemon/firebase/auth_user/auth_page.dart';
 import 'package:pokemon/firebase/firebase_service.dart';
@@ -22,7 +23,9 @@ final passwordController = TextEditingController();
 //lo debajo son text from donde se ponen los recuadros donde van tanto el correo como la contraseña
 //se le puso OutlineInputBorder para poner la linea que rodea los bordes de la caja de texto
 class _LoginScreenState extends State<Login> {
+  User? user = FirebaseAuth.instance.currentUser;
   final auth = FirebaseAuth.instance;
+  Firebase_service _firebase = Firebase_service();
 
   void singUserIn() async {
     try {
@@ -40,7 +43,7 @@ class _LoginScreenState extends State<Login> {
         wrongPassword();
       }
     }
-    checkAuthenticationStatus();
+    _firebase.checkAuthenticationStatus();
   }
 
   void wrongPassword() {
@@ -178,12 +181,26 @@ class _LoginScreenState extends State<Login> {
     );
     final btnGit = SignInButton.mini(
       buttonType: ButtonType.github,
-      onPressed: () {},
+      onPressed: () async {
+        try {
+          final Map<String, dynamic> userInfo = await signInWithGitHub();
+          Navigator.pushNamed(context, '/Home', arguments: userInfo);
+          signInWithGitHub();
+        } on FirebaseAuthException catch (e) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(e.message.toString())));
+        }
+      },
     );
     final btnGoogle = SignInButton.mini(
       buttonType: ButtonType.google,
       onPressed: () {
-        AuthGoogle().verificarYCrearUsuario(context);
+        try {
+          AuthGoogle().verificarYCrearUsuario(context);
+        } on FirebaseAuthException catch (e) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(e.message.toString())));
+        }
 
         //Navigator.pushNamed(context, '/Password_Google');
         //Navigator.pushNamed(context, AuthPage.routeName);

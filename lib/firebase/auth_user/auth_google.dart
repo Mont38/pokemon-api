@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pokemon/firebase/firebase_service.dart';
 
 class AuthGoogle {
+  Firebase_service _firebase = Firebase_service();
   Future<UserCredential> signInWithGoogle(BuildContext context) async {
     final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
     final GoogleSignInAuthentication gAuth = await gUser!.authentication;
@@ -14,6 +15,7 @@ class AuthGoogle {
     );
     final userCredential =
         await FirebaseAuth.instance.signInWithCredential(credential);
+    ;
     final user = userCredential.user;
     // Obtener el nombre y el correo electrónico del usuario
     final displayName = user!.displayName;
@@ -28,7 +30,7 @@ class AuthGoogle {
       'email': email,
     });
     print('Usuario creado exitosamente: ${user.uid}');
-    verificarCampoContrasena(context);
+    _firebase.verificarCampoContrasena(context);
     return userCredential;
   }
 
@@ -41,7 +43,7 @@ class AuthGoogle {
     );
     final userCredential =
         await FirebaseAuth.instance.signInWithCredential(credential);
-    verificarCampoContrasena(context);
+    _firebase.verificarCampoContrasena(context);
     return userCredential;
   }
 
@@ -55,8 +57,11 @@ class AuthGoogle {
     try {
       List<String> signInMethods =
           await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+      final currentUser = _auth.currentUser;
+      print(currentUser);
+
       signInWithGoogle2(context);
-      print('usr existe');
+
       return signInMethods.isNotEmpty;
     } catch (e) {
       signInWithGoogle(context);
@@ -67,6 +72,7 @@ class AuthGoogle {
 
   // Verifica si el usuario está autenticado
   Future<void> verificarYCrearUsuario(BuildContext context) async {
+    print('arrived');
     final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
     final GoogleSignInAuthentication gAuth = await gUser!.authentication;
     final credential = GoogleAuthProvider.credential(
@@ -78,9 +84,13 @@ class AuthGoogle {
     final user = userCredential.user;
     final displayName = user!.displayName;
     final email = user.email;
+    var signInMethods1 = await FirebaseAuth.instance
+        .fetchSignInMethodsForEmail(user.email.toString());
+
     checkUserExistence(context, user.email.toString());
   }
 
+  verificacionEmail() {}
   Future<void> borrarUsuario() async {
     final User? currentUser = _auth.currentUser;
 

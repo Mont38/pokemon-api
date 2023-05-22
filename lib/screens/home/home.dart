@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -14,6 +15,7 @@ import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pokemon/model/user_model.dart';
 
 import 'dart:convert';
 
@@ -33,13 +35,19 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  Firebase_service _firebase = Firebase_service();
+
   final auth = FirebaseAuth.instance;
   int _currentIndex = 0;
-  final screens = [const Page1(), const Page3(), Page2()];
+
   final user = FirebaseAuth.instance.currentUser!;
+
+  final CollectionReference usersCollection =
+      FirebaseFirestore.instance.collection('users');
 
   @override
   Widget build(BuildContext context) {
+    final screens = [const Page1(), const Page3(), Page2()];
     ThemeProvider tema = Provider.of<ThemeProvider>(context);
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -53,95 +61,129 @@ class _HomeState extends State<Home> {
           borderRadius: BorderRadius.circular(50),
           child: Drawer(
             child: Container(
-              decoration: const BoxDecoration(),
-              child: ListView(
-                children: [
-                  UserAccountsDrawerHeader(
-                      currentAccountPicture: CircleAvatar(
-                        backgroundImage: NetworkImage(user.photoURL.toString()),
-                      ),
-                      accountName: Text('${user.displayName}'),
-                      accountEmail: Text('${user.email}')),
-                  Column(
-                    children: [
-                      TextButton(
-                        style: TextButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50),
-                            side: const BorderSide(
-                              color: Color.fromRGBO(255, 178, 122, 1),
-                            ),
-                          ),
-                          primary: Colors.white,
-                          backgroundColor:
-                              const Color.fromRGBO(88, 89, 90, 0.239),
-                        ),
-                        onPressed: () {
-                          tema.cambiarTemaOscuro();
+                decoration: const BoxDecoration(),
+                child: StreamBuilder(
+                  stream: _firebase.getAllFavorites(user.email),
+                  builder: (BuildContext context, snapshot) {
+                    if (snapshot.hasData) {
+                      final Set<String> processedUsers = Set<
+                          String>(); // Set para almacenar usuarios procesados
+                      return ListView.builder(
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final userName =
+                              snapshot.data!.docs[index].get('name') ??
+                                  snapshot.data!.docs[index].get('email');
+
+                          // Verificar si el usuario ya fue procesado y omitirlo si es el caso
+                          if (processedUsers.contains(userName)) {
+                            return Container(); // Omitir la construcción del elemento si el usuario ya fue procesado
+                          }
+                          processedUsers.add(
+                              userName); // Agregar el usuario al conjunto de usuarios procesados
+
+                          print(userName);
+
+                          return Column(
+                            children: [
+                              UserAccountsDrawerHeader(
+                                currentAccountPicture: CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(user.photoURL.toString()),
+                                ),
+                                accountName: Text(
+                                    '${snapshot.data!.docs[index].get('name') ?? snapshot.data!.docs[index].get('email')}${snapshot.data!.docs[index].get('name') != null ? '' : ''}'),
+                                accountEmail: Text(
+                                    '${snapshot.data!.docs[index].get('email')}'),
+                              ),
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                    side: const BorderSide(
+                                      color: Color.fromRGBO(255, 178, 122, 1),
+                                    ),
+                                  ),
+                                  primary: Colors.white,
+                                  backgroundColor:
+                                      const Color.fromRGBO(88, 89, 90, 0.239),
+                                ),
+                                onPressed: () {
+                                  tema.cambiarTemaOscuro();
+                                },
+                                child: const Icon(Icons.nightlight,
+                                    color: Color.fromRGBO(32, 83, 134, 1)),
+                              ),
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                    side: const BorderSide(
+                                      color: Color.fromRGBO(255, 178, 122, 1),
+                                    ),
+                                  ),
+                                  primary: Colors.white,
+                                  backgroundColor:
+                                      const Color.fromRGBO(88, 89, 90, 0.239),
+                                ),
+                                onPressed: () {
+                                  tema.cambiarTemaClaro();
+                                },
+                                child: const Icon(Icons.sunny,
+                                    color: Color.fromRGBO(255, 178, 122, 1)),
+                              ),
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                    side: const BorderSide(
+                                      color: Color.fromRGBO(255, 178, 122, 1),
+                                    ),
+                                  ),
+                                  primary: Colors.white,
+                                  backgroundColor:
+                                      const Color.fromRGBO(88, 89, 90, 0.239),
+                                ),
+                                onPressed: () {
+                                  tema.cambiarTemaPersonalizado();
+                                },
+                                child: const Icon(Icons.auto_awesome,
+                                    color: Color.fromRGBO(196, 111, 235, 1)),
+                              ),
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                    side: const BorderSide(
+                                      color: Color.fromRGBO(255, 178, 122, 1),
+                                    ),
+                                  ),
+                                  primary: Colors.white,
+                                  backgroundColor:
+                                      const Color.fromRGBO(88, 89, 90, 0.239),
+                                ),
+                                onPressed: () {
+                                  FirebaseAuth.instance.signOut().then(
+                                        (value) => Navigator.pushNamed(
+                                            context, '/Login'),
+                                      );
+                                },
+                                child: const Icon(Icons.exit_to_app,
+                                    color: Color.fromRGBO(255, 178, 122, 1)),
+                              ),
+                            ],
+                          );
                         },
-                        child: const Icon(Icons.nightlight,
-                            color: Color.fromRGBO(32, 83, 134, 1)),
-                      ),
-                      TextButton(
-                        style: TextButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50),
-                            side: const BorderSide(
-                              color: Color.fromRGBO(255, 178, 122, 1),
-                            ),
-                          ),
-                          primary: Colors.white,
-                          backgroundColor:
-                              const Color.fromRGBO(88, 89, 90, 0.239),
-                        ),
-                        onPressed: () {
-                          tema.cambiarTemaClaro();
-                        },
-                        child: const Icon(Icons.sunny,
-                            color: Color.fromRGBO(255, 178, 122, 1)),
-                      ),
-                      TextButton(
-                        style: TextButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50),
-                            side: const BorderSide(
-                              color: Color.fromRGBO(255, 178, 122, 1),
-                            ),
-                          ),
-                          primary: Colors.white,
-                          backgroundColor:
-                              const Color.fromRGBO(88, 89, 90, 0.239),
-                        ),
-                        onPressed: () {
-                          tema.cambiarTemaPersonalizado();
-                        },
-                        child: const Icon(Icons.auto_awesome,
-                            color: Color.fromRGBO(196, 111, 235, 1)),
-                      ),
-                      TextButton(
-                        style: TextButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50),
-                            side: const BorderSide(
-                              color: Color.fromRGBO(255, 178, 122, 1),
-                            ),
-                          ),
-                          primary: Colors.white,
-                          backgroundColor:
-                              const Color.fromRGBO(88, 89, 90, 0.239),
-                        ),
-                        onPressed: () {
-                          FirebaseAuth.instance.signOut().then((value) =>
-                              Navigator.pushNamed(context, '/Login'));
-                        },
-                        child: const Icon(Icons.exit_to_app,
-                            color: Color.fromRGBO(255, 178, 122, 1)),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+                      );
+                    } else if (snapshot.hasError) {
+                      return const Center(
+                        child: Text('Error en la petición, intente nuevamente'),
+                      );
+                    } else {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                  },
+                )),
           ),
         ),
       ),
@@ -191,8 +233,8 @@ class _HomeState extends State<Home> {
               text: "Pokedex",
             ),
             GButton(
-              icon: Icons.backpack,
-              iconColor: Color.fromARGB(255, 246, 125, 49),
+              icon: Icons.person,
+              iconColor: Color.fromARGB(255, 49, 184, 246),
               text: "User",
             ),
           ],
@@ -227,11 +269,12 @@ class _Page1State extends State<Page1> {
   }
 
   Future<void> fetchFavorites() async {
+    Firebase_service _firebase = Firebase_service();
     // Aquí puedes usar el user_id específico que deseas consultar
     String userId = userPage1.uid.toString();
 
     List<Map<String, dynamic>> userFavorites =
-        await getFavoritesByUserId(userId);
+        await await _firebase.getFavoritesByUserId(userId);
 
     setState(() {
       favorites = userFavorites;
@@ -285,7 +328,7 @@ class _Page1State extends State<Page1> {
                 } else if (type == 'Poison') {
                   backgroundColor = Colors.deepPurpleAccent;
                 } else if (type == 'Normal') {
-                  backgroundColor = Colors.black26;
+                  backgroundColor = Color.fromARGB(66, 0, 0, 0);
                 } else {
                   backgroundColor = Colors.pink;
                 }
@@ -347,9 +390,10 @@ class _Page1State extends State<Page1> {
   }
 
   void fetchFavoritesAndPokemonData() async {
+    Firebase_service _firebase = Firebase_service();
     String userId = userPage1.uid.toString();
     List<Map<String, dynamic>> userFavorites =
-        await getFavoritesByUserId(userId);
+        await _firebase.getFavoritesByUserId(userId);
 
     List<dynamic> pokemonList = [];
 
@@ -418,6 +462,7 @@ class Page2 extends StatefulWidget {
 }
 
 class _Page2State extends State<Page2> {
+  Firebase_service _firebase = Firebase_service();
   final picker = ImagePicker();
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
@@ -561,7 +606,9 @@ class _Page2State extends State<Page2> {
                 String email = _emailController.text;
                 String userId = userPage2.uid
                     .toString(); // Obtén el ID del usuario actual desde FirebaseAuth
-                updateUserInfo(email, name, _image.toString()).then((_) {
+                _firebase
+                    .updateUserInfo(email, name, _image.toString())
+                    .then((_) {
                   // Actualización exitosa
                   // Puedes mostrar un mensaje de éxito o realizar cualquier otra acción necesaria
                   showDialog(

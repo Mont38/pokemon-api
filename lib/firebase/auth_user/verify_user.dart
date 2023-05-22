@@ -11,6 +11,7 @@ class Verify_User extends StatefulWidget {
   State<Verify_User> createState() => Verify_UserState();
 }
 
+Firebase_service _firebase = Firebase_service();
 final auth = FirebaseAuth.instance;
 
 class Verify_UserState extends State<Verify_User> {
@@ -38,7 +39,7 @@ class Verify_UserState extends State<Verify_User> {
 
       timer?.cancel();
 
-      updateEmailVerificationStatus(context, user!.email.toString());
+      _firebase.updateEmailVerificationStatus(context, user!.email.toString());
     }
   }
 

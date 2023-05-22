@@ -13,6 +13,7 @@ class Register extends StatefulWidget {
   State<Register> createState() => _RegisterScreenState();
 }
 
+Firebase_service _firebase = Firebase_service();
 final emailController = TextEditingController();
 final passwordController = TextEditingController();
 final nameController = TextEditingController();
@@ -34,7 +35,7 @@ class _RegisterScreenState extends State<Register> {
       await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
               email: emailController.text, password: passwordController.text)
-          .then((value) => addUsers(
+          .then((value) => _firebase.addUsers(
               context,
               emailController.text,
               passwordController.text,
